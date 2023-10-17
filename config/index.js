@@ -1,18 +1,14 @@
 export default {
   development: {
-    baseUrl: '/diyadmin',
-    uploadUrl: '/diyadmin/upload',
+    baseUrl: '/readTo',
   },
   sit: {
-    baseUrl: '/diyadmin',
-    uploadUrl: '/diyadmin/upload',
+    baseUrl: '/readTo',
   },
   uat: {
-    baseUrl: '/diyadmin',
-    uploadUrl: '/diyadmin/upload',
+    baseUrl: '/readTo',
   },
   prod: {
-    baseUrl: '/diyadmin',
-    uploadUrl: '/diyadmin/upload',
+    baseUrl: '/readTo',
   },
 };

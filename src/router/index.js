@@ -5,42 +5,14 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/model',
+      redirect: '/dashboard',
       component: Layout,
       children: [
         {
-          path: '/model',
-          name: 'model',
-          component: () => import('@/views/model/index.vue'),
-          meta: { title: '机型' },
-        },
-        {
-          path: '/sticker',
-          name: 'sticker',
-          component: () => import('@/views/sticker/index.vue'),
-          meta: { title: '贴纸' },
-        },
-        {
-          path: '/template',
-          name: 'template',
-          component: () => import('@/views/template/index.vue'),
-          meta: { title: '模板' },
-        },
-        {
-          path: '/template/detail',
-          name: 'templateDetail',
-          component: () => import('@/views/template/model/detail.vue'),
-          meta: {
-            title: '模板详情',
-            detail: true,
-            parrentPath: '/template',
-          },
-        },
-        {
-          path: '/dictionary',
-          name: 'dictionary',
-          component: () => import('@/views/dictionary/index.vue'),
-          meta: { title: '数据字典' },
+          path: '/dashboard',
+          name: 'dashboard',
+          component: () => import('@/views/dashboard/index.vue'),
+          meta: { title: '首页' },
         },
       ],
     },

@@ -20,7 +20,7 @@ import TopBar from "./components/topBar.vue";
 <style lang="less" scoped>
 .layout-container {
   display: flex;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   .left-part {
     width: 190px;

@@ -67,16 +67,6 @@ export function getTimeMmss(Date1, type, midFlag) {
     year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
   );
 }
-
-function checkHasJXTenant(list) {
-  const JXTenantId = 2;
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].tenantId === JXTenantId) {
-      return true;
-    }
-  }
-  return false;
-}
 export function initGlableFilters(app) {
   app.config.globalProperties.$filters = {
     dateFormat(dat) {
@@ -100,17 +90,6 @@ export function initGlableFilters(app) {
     },
   };
 }
-export function jumpLinkHandler(url) {
-  let currentEnv = import.meta.env.MODE;
-  const envMap = {
-    development: 'sit',
-    sit: 'sit',
-    uat: 'uat',
-    prod: 'prod',
-  };
-  const target = `https://${envMap[currentEnv]}.rlinkiot.com${url}`;
-  window.open(target, '_blank');
-}
 export function getUrlParams(url) {
   url = window.location.href;
   // 通过 ? 分割获取后面的参数字符串
@@ -126,11 +105,6 @@ export function getUrlParams(url) {
     obj[arr[0]] = arr[1];
   }
   return obj;
-}
-// 拼接图片地址
-export function buildImageUrl(id) {
-  if (id.includes('/diyadmin')) return id;
-  return `/diyadmin/download?fileId=${id}`;
 }
 // 生成唯一的id
 export function uuid() {
