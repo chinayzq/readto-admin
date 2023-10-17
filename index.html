@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>Colgifts</title>
+    <script>
+      // 禁止滚轮缩放
+      document.addEventListener(
+        'mousewheel',
+        function (e) {
+          e = e || window.event;
+          if ((e.wheelDelta && event.ctrlKey) || e.detail) {
+            event.preventDefault();
+          }
+        },
+        {
+          capture: false,
+          passive: false,
+        }
+      );
+      // 火狐浏览器
+      window.addEventListener(
+        'DOMMouseScroll',
+        (e) => {
+          if (e.ctrlKey === true || e.metaKey) {
+            e.preventDefault();
+          }
+        },
+        {
+          passive: false,
+        }
+      );
+      document.addEventListener(
+        'keydown',
+        function (event) {
+          if (
+            (event.ctrlKey === true || event.metaKey === true) &&
+            (event.keyCode === 61 ||
+              event.keyCode === 107 ||
+              event.keyCode === 173 ||
+              event.keyCode === 109 ||
+              event.keyCode === 187 ||
+              event.keyCode === 189)
+          ) {
+            event.preventDefault();
+          }
+        },
+        false
+      );
+    </script>
+  </head>
+  <body
+    style="
+      overflow: hidden;
+      background: #f2f8f9;
+      filter: drop-shadow(2px 4px 6px #ccc);
+    "
+  >
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
