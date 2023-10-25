@@ -3,8 +3,7 @@ import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { type FormInstance, type FormRules } from "element-plus"
-import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
-import { getLoginCodeApi } from "@/api/login"
+import { User, Lock } from "@element-plus/icons-vue"
 import { type LoginRequestData } from "@/api/login/types/login"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 
@@ -15,22 +14,18 @@ const loginFormRef = ref<FormInstance | null>(null)
 
 /** 登录按钮 Loading */
 const loading = ref(false)
-/** 验证码图片 URL */
-const codeUrl = ref("")
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
-  username: "admin",
-  password: "12345678",
-  code: ""
+  email: "admin@qq.com",
+  lang: "en",
+  passWord: "admin123"
+  // code: ""
 })
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
-  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
-  ],
-  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
+  email: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  passWord: [{ required: true, message: "请输入密码", trigger: "blur" }]
+  // code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
 /** 登录逻辑 */
 const handleLogin = () => {
@@ -43,8 +38,7 @@ const handleLogin = () => {
           router.push({ path: "/" })
         })
         .catch(() => {
-          createCode()
-          loginFormData.password = ""
+          loginFormData.passWord = ""
         })
         .finally(() => {
           loading.value = false
@@ -54,19 +48,6 @@ const handleLogin = () => {
     }
   })
 }
-/** 创建验证码 */
-const createCode = () => {
-  // 先清空验证码的输入
-  loginFormData.code = ""
-  // 获取验证码
-  codeUrl.value = ""
-  getLoginCodeApi().then((res) => {
-    codeUrl.value = res.data
-  })
-}
-
-/** 初始化验证码 */
-createCode()
 </script>
 
 <template>
@@ -78,9 +59,9 @@ createCode()
       </div>
       <div class="content">
         <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
-          <el-form-item prop="username">
+          <el-form-item prop="email">
             <el-input
-              v-model.trim="loginFormData.username"
+              v-model.trim="loginFormData.email"
               placeholder="用户名"
               type="text"
               tabindex="1"
@@ -88,9 +69,9 @@ createCode()
               size="large"
             />
           </el-form-item>
-          <el-form-item prop="password">
+          <el-form-item prop="passWord">
             <el-input
-              v-model.trim="loginFormData.password"
+              v-model.trim="loginFormData.passWord"
               placeholder="密码"
               type="password"
               tabindex="2"
@@ -99,7 +80,7 @@ createCode()
               show-password
             />
           </el-form-item>
-          <el-form-item prop="code">
+          <!-- <el-form-item prop="code">
             <el-input
               v-model.trim="loginFormData.code"
               placeholder="验证码"
@@ -124,7 +105,7 @@ createCode()
                 </el-image>
               </template>
             </el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
         </el-form>
       </div>
@@ -156,8 +137,10 @@ createCode()
       justify-content: center;
       align-items: center;
       height: 150px;
+      background: lightblue;
       img {
-        height: 100%;
+        width: 60%;
+        height: 50%;
       }
     }
     .content {

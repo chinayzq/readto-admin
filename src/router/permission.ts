@@ -39,7 +39,6 @@ router.beforeEach(async (to, _from, next) => {
     NProgress.done()
     return next({ path: "/" })
   }
-
   // 如果用户已经获得其权限角色
   if (userStore.roles.length !== 0) return next()
 
