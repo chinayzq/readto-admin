@@ -1,222 +1,184 @@
+<script lang="ts" setup>
+import { reactive, ref } from "vue"
+import { useRouter } from "vue-router"
+import { useUserStore } from "@/store/modules/user"
+import { type FormInstance, type FormRules } from "element-plus"
+import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
+import { getLoginCodeApi } from "@/api/login"
+import { type LoginRequestData } from "@/api/login/types/login"
+import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
+
+const router = useRouter()
+
+/** 登录表单元素的引用 */
+const loginFormRef = ref<FormInstance | null>(null)
+
+/** 登录按钮 Loading */
+const loading = ref(false)
+/** 验证码图片 URL */
+const codeUrl = ref("")
+/** 登录表单数据 */
+const loginFormData: LoginRequestData = reactive({
+  username: "admin",
+  password: "12345678",
+  code: ""
+})
+/** 登录表单校验规则 */
+const loginFormRules: FormRules = {
+  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  password: [
+    { required: true, message: "请输入密码", trigger: "blur" },
+    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
+  ],
+  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
+}
+/** 登录逻辑 */
+const handleLogin = () => {
+  loginFormRef.value?.validate((valid: boolean, fields) => {
+    if (valid) {
+      loading.value = true
+      useUserStore()
+        .login(loginFormData)
+        .then(() => {
+          router.push({ path: "/" })
+        })
+        .catch(() => {
+          createCode()
+          loginFormData.password = ""
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    } else {
+      console.error("表单校验不通过", fields)
+    }
+  })
+}
+/** 创建验证码 */
+const createCode = () => {
+  // 先清空验证码的输入
+  loginFormData.code = ""
+  // 获取验证码
+  codeUrl.value = ""
+  getLoginCodeApi().then((res) => {
+    codeUrl.value = res.data
+  })
+}
+
+/** 初始化验证码 */
+createCode()
+</script>
+
 <template>
-  <div class="login-component">
-    <div class="login-logo">
-      <img src="@/assets/images/project_logo.png" alt="" />
-    </div>
-    <div class="login-form-container">
-      <div class="inner-container">
-        <div class="main-title">
-          欢迎登录
-          <img src="@/assets/images/project_logo.png" alt="" />
-        </div>
-        <div class="tips-container">
-          <span class="tips-span">{{ loginTip }}</span>
-        </div>
-        <el-form
-          ref="loginFormIns"
-          :model="loginForm"
-          :rules="loginRules"
-          class="login-form"
-          auto-complete="on"
-          label-position="left"
-        >
-          <el-form-item prop="userName">
+  <div class="login-container">
+    <ThemeSwitch class="theme-switch" />
+    <div class="login-card">
+      <div class="title">
+        <img src="@/assets/layouts/logo-text-2.png" />
+      </div>
+      <div class="content">
+        <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
+          <el-form-item prop="username">
             <el-input
-              class="login-input"
-              v-model="loginForm.userName"
-              :prefix-icon="User"
-              maxlength="16"
-              name="userName"
+              v-model.trim="loginFormData.username"
+              placeholder="用户名"
               type="text"
-              auto-complete="on"
-              placeholder="账号"
-              autofocus
+              tabindex="1"
+              :prefix-icon="User"
+              size="large"
             />
           </el-form-item>
           <el-form-item prop="password">
             <el-input
-              class="login-input"
-              maxlength="50"
-              :prefix-icon="Lock"
-              type="password"
-              v-model="loginForm.password"
-              name="password"
-              auto-complete="on"
+              v-model.trim="loginFormData.password"
               placeholder="密码"
-              @keyup.enter="handleLogin"
+              type="password"
+              tabindex="2"
+              :prefix-icon="Lock"
+              size="large"
+              show-password
             />
           </el-form-item>
-          <el-form-item class="non-border button-container">
-            <el-button
-              :loading="loading"
-              type="primary"
-              style="width: 100%"
-              class="login-button"
-              @click="handleLogin"
+          <el-form-item prop="code">
+            <el-input
+              v-model.trim="loginFormData.code"
+              placeholder="验证码"
+              type="text"
+              tabindex="3"
+              :prefix-icon="Key"
+              maxlength="7"
+              size="large"
             >
-              登录
-            </el-button>
+              <template #append>
+                <el-image :src="codeUrl" @click="createCode" draggable="false">
+                  <template #placeholder>
+                    <el-icon>
+                      <Picture />
+                    </el-icon>
+                  </template>
+                  <template #error>
+                    <el-icon>
+                      <Loading />
+                    </el-icon>
+                  </template>
+                </el-image>
+              </template>
+            </el-input>
           </el-form-item>
+          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
         </el-form>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import { User, Lock } from "@element-plus/icons-vue";
-import { loginRequest } from "@/api/user.js";
-import { ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
-const router = useRouter();
-const loginTip = ref(null);
-const loading = ref(false);
-const loginForm = ref({
-  userName: "",
-  password: "",
-});
-const loginFormIns = ref(null);
-const loginRules = ref({
-  userName: [
-    {
-      required: true,
-      trigger: "blur",
-      message: "账号",
-    },
-  ],
-  password: [
-    {
-      required: true,
-      trigger: "blur",
-      message: "密码",
-    },
-  ],
-});
-const handleLogin = () => {
-  loginFormIns.value.validate((valid) => {
-    if (valid) {
-      loading.value = true;
-      loginRequest({
-        userName: loginForm.value.userName,
-        password: loginForm.value.password,
-      })
-        .then((res) => {
-          if (res.code === 4101) {
-            ElMessage({
-              message: "账号或密码错误，请重新登录！",
-              type: "warning",
-            });
-          } else {
-            if (res.data && res.data.token) {
-              localStorage.setItem("diy-admin-token", res.data.token);
-              router.push("/");
-            }
-          }
-        })
-        .finally(() => {
-          loading.value = false;
-        });
-    } else {
-      console.log("error submit!!");
-      return false;
-    }
-  });
-};
-</script>
-
-<style lang="less" scoped>
-.login-component {
-  height: 100%;
-  width: 100%;
-  background: url("../../assets/images/login_background.png");
-  // background: url("../../assets/images/login_background2.jpg");
-  background-size: cover;
-  position: relative;
+<style lang="scss" scoped>
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  .login-logo {
-    position: absolute;
-    top: 40px;
-    left: 120px;
-    width: 190px;
-    height: 90px;
-    border-radius: 5px;
-    color: #252d3d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-family: fantasy;
-    filter: invert(1);
+  width: 100%;
+  min-height: 100%;
+  .theme-switch {
+    position: fixed;
+    top: 5%;
+    right: 5%;
+    cursor: pointer;
   }
-  .login-form-container {
-    width: 478px;
-    height: 422px;
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0px 9px 13px 0px rgba(17, 58, 96, 0.15);
+  .login-card {
+    width: 480px;
     border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .inner-container {
-      width: 440px;
-      height: 380px;
-      background: #ffffff;
-      box-shadow: 0px 9px 13px 0px rgba(17, 58, 96, 0.15);
-      border-radius: 20px;
-      padding: 74px 40px 0;
-      .main-title {
-        font-size: 20px;
-        font-family: PingFang SC-Semibold, PingFang SC;
-        font-weight: 600;
-        color: #252d3d;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        img {
-          height: 30px;
-          margin-left: 10px;
+    box-shadow: 0 0 10px #dcdfe6;
+    background-color: #fff;
+    overflow: hidden;
+    .title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 150px;
+      img {
+        height: 100%;
+      }
+    }
+    .content {
+      padding: 20px 50px 50px 50px;
+      :deep(.el-input-group__append) {
+        padding: 0;
+        overflow: hidden;
+        .el-image {
+          width: 100px;
+          height: 40px;
+          border-left: 0px;
+          user-select: none;
+          cursor: pointer;
+          text-align: center;
         }
       }
-      .tips-container {
-        height: 50px;
-        line-height: 50px;
-        color: #ff0000;
-      }
-      .ad-container {
-        margin-bottom: 72px;
+      .el-button {
+        width: 100%;
+        margin-top: 10px;
       }
     }
-  }
-  :deep(.el-form-item) {
-    margin-bottom: 30px;
-  }
-  :deep(.login-button) {
-    background: #029bb0;
-    border-color: #029bb0;
-  }
-  :deep(.login-input) {
-    input:focus {
-      border-color: #029bb0;
-    }
-  }
-  :deep(.login-checkbox) {
-    .el-checkbox__input.is-checked .el-checkbox__inner {
-      background: #029bb0;
-      border-color: #029bb0;
-    }
-    .el-checkbox__inner:hover {
-      border-color: #029bb0;
-    }
-    .el-checkbox__input.is-checked + .el-checkbox__label {
-      color: #029bb0;
-    }
-  }
-
-  .button-container {
-    margin-top: 80px;
   }
 }
 </style>
