@@ -13,6 +13,9 @@
 
 // 业务页面几乎都应该在根元素上挂载 class="app-container"，以保持页面美观
 .app-container {
+  margin: 20px;
+  background: #fff;
+  border-radius: 5px;
   padding: 20px;
 }
 
