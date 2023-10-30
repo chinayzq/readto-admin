@@ -12,7 +12,7 @@
         </el-col>
         <el-col :span="5">
           <el-button type="primary" :icon="Search">查询</el-button>
-          <el-button type="primary" :icon="Plus" @click="addNewArticle">新增文章</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="addNewArticle">新增文章</el-button>
         </el-col>
       </el-row>
     </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { Search, Plus } from "@element-plus/icons-vue"
+import { Search, CirclePlus } from "@element-plus/icons-vue"
 import { ref } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
 import ArticleDialog from "./components/articleDialog.vue"

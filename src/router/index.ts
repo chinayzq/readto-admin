@@ -3,7 +3,6 @@ import { history, flatMultiLevelRoutes } from "./helper"
 import routeSettings from "@/config/route"
 
 const Layouts = () => import("@/layouts/index.vue")
-
 /**
  * 常驻路由
  * 除了 redirect/403/404/login 等隐藏页面，其他页面建议设置 Name 属性
@@ -55,7 +54,17 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: "articleManagement",
         meta: {
           title: "文章管理",
-          svgIcon: "dashboard",
+          svgIcon: "article",
+          affix: true
+        }
+      },
+      {
+        path: "userManagement",
+        component: () => import("@/views/userManagement/index.vue"),
+        name: "userManagement",
+        meta: {
+          title: "用户管理",
+          svgIcon: "user",
           affix: true
         }
       }
