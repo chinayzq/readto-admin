@@ -26,7 +26,7 @@
           <el-input v-model="searchForm.searchKey" placeholder="输入昵称或联系方式搜索" />
         </el-col>
         <el-col :span="5">
-          <el-button type="primary" :icon="Search">查询</el-button>
+          <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
           <el-button type="primary" :icon="CirclePlus" @click="addNewUser">添加用户</el-button>
         </el-col>
       </el-row>
@@ -36,17 +36,29 @@
         <el-table-column type="index" label="序号" width="60" />
         <el-table-column prop="image" label="头像">
           <template #default="scope">
-            <img v-if="scope.row.image" :src="scope.row.image" alt="" />
+            <img v-if="scope.row.headImg" :src="scope.row.headImg" alt="" />
             <img v-else src="@/assets/user/user_default_icon.png" alt="" />
           </template>
         </el-table-column>
-        <el-table-column prop="nickName" label="昵称" />
-        <el-table-column prop="sex" label="性别" />
+        <el-table-column prop="nickeName" label="昵称" />
+        <el-table-column prop="gender" label="性别">
+          <template #default="scope">
+            <span>{{ scope.row.gender === 1 ? "男" : "女" }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="age" label="年龄" />
-        <el-table-column prop="phoneNumber" label="联系方式" />
+        <el-table-column prop="bindPhone" label="联系方式">
+          <template #default="scope">
+            <span>{{ scope.row.bindPhone || "-" }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="nextLevel" label="下级" />
         <el-table-column prop="goldCount" label="金币余额" />
-        <el-table-column prop="lastOnlineTime" label="最后登录时间" />
+        <el-table-column prop="lastOnlineTime" label="最后登录时间">
+          <template #default="scope">
+            <span>{{ formatDateTime(scope.row.lastLoginTime) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="封禁状态">
           <template #default="scope">
             <el-switch @change="userStatusChange" v-model="scope.row.status" :active-value="1" :inactive-value="2" />
@@ -60,6 +72,15 @@
         </el-table-column>
       </el-table>
     </div>
+    <div class="pagination-container">
+      <el-pagination
+        v-model:current-page="pageVO.page"
+        background
+        layout="total, prev, pager, next"
+        :total="pageVO.total"
+        @current-change="handleCurrentChange"
+      />
+    </div>
     <UserAddDialog :dialogVisible="userDialogVisible" @close="userAddDialogClose" />
     <UserDetailDialog :dataset="userDetailDatas" :dialogVisible="userDetailVisible" @close="userDetailClose" />
     <GoldOperaionDialog :dataset="userGoldDatas" :dialogVisible="goldOperationVisible" @close="closeGoldOperation" />
@@ -72,6 +93,8 @@ import { ref } from "vue"
 import UserAddDialog from "./components/userAddDialog.vue"
 import UserDetailDialog from "./components/userDetailDialog.vue"
 import GoldOperaionDialog from "./components/goldOperationDialog.vue"
+import { getUserList } from "@/api/user"
+import { formatDateTime } from "@/utils"
 //#region 所有options
 const sexOptions = ref([
   {
@@ -165,6 +188,11 @@ const searchForm = ref({
   state: null,
   searchKey: null
 })
+const pageVO = ref({
+  page: 1,
+  pageSize: 10,
+  total: 0
+})
 const tableData = ref([
   {
     image: null,
@@ -191,9 +219,22 @@ const tableData = ref([
 ])
 const tableLoading = ref(false)
 const initDatas = () => {
-  console.log("获取数据")
+  tableLoading.value = true
+  getUserList(pageVO.value)
+    .then((res) => {
+      const { total, records } = res.data
+      tableData.value = records
+      pageVO.value.total = total
+    })
+    .finally(() => {
+      tableLoading.value = false
+    })
 }
 initDatas()
+const handleCurrentChange = (page) => {
+  pageVO.value.page = page
+  initDatas()
+}
 //#endregion
 
 //#region 修改
@@ -241,6 +282,11 @@ const closeGoldOperation = () => {
 .user-management-component {
   .search-line {
     margin-bottom: 20px;
+  }
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
   }
 }
 </style>
