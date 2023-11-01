@@ -8,3 +8,12 @@ export function getUserList(params) {
     params
   })
 }
+
+/** 获取虚拟用户列表 */
+export function getVirtuallyUserList(params) {
+  return request({
+    url: "/users/dropdown",
+    method: "get",
+    params
+  })
+}

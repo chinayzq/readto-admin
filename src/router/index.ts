@@ -46,18 +46,8 @@ export const constantRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
-    redirect: "/articleManagement",
+    redirect: "/userManagement",
     children: [
-      {
-        path: "articleManagement",
-        component: () => import("@/views/articleManagement/index.vue"),
-        name: "articleManagement",
-        meta: {
-          title: "文章管理",
-          svgIcon: "article",
-          affix: true
-        }
-      },
       {
         path: "userManagement",
         component: () => import("@/views/userManagement/index.vue"),
@@ -66,6 +56,36 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "用户管理",
           svgIcon: "user",
           affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/article",
+    component: Layouts,
+    name: "article",
+    redirect: "/article/articleManagement",
+    meta: {
+      title: "文章",
+      svgIcon: "article"
+    },
+    children: [
+      {
+        path: "articleManagement",
+        component: () => import("@/views/articleManagement/index.vue"),
+        name: "articleManagement",
+        meta: {
+          title: "文章管理",
+          keepAlive: true
+        }
+      },
+      {
+        path: "friendlyArticle",
+        component: () => import("@/views/friendlyArticle/index.vue"),
+        name: "friendlyArticle",
+        meta: {
+          title: "交友内容管理",
+          keepAlive: true
         }
       }
     ]
@@ -140,7 +160,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   //       }
   //     }
   //   ]
-  // },
+  // }
   // {
   //   path: "/menu",
   //   component: Layouts,
