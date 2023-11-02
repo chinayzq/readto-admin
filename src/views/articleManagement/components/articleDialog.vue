@@ -8,61 +8,90 @@
       :before-close="handleClose"
     >
       <div class="article-detail">
-        <template v-if="props.dataset.datas.id">
-          <!-- 编辑 -->
-          111
-        </template>
-        <template v-else>
-          <!-- 新增 -->
-          <el-form label-position="left" label-width="120px" ref="articleFormIns" :rules="formRules" :model="formData">
-            <el-row :gutter="48">
-              <el-col :span="24">
-                <el-form-item label="文章标题" prop="title">
-                  <el-input placeholder="请输入文章标题" v-model="formData.title" />
+        <el-form label-position="left" label-width="120px" ref="articleFormIns" :rules="formRules" :model="formData">
+          <el-row :gutter="48">
+            <el-col :span="24">
+              <el-form-item label="文章标题" prop="name">
+                <el-input
+                  :disabled="currentStatus === 'preview'"
+                  placeholder="请输入文章标题"
+                  v-model="formData.name"
+                />
+              </el-form-item>
+            </el-col>
+            <template v-if="currentStatus !== 'add'">
+              <el-col :span="12">
+                <el-form-item label="发布时间" prop="publish">
+                  {{ formData.publish ? formatDateTime(formData.publish) : "-" }}
                 </el-form-item>
               </el-col>
-            </el-row>
-            <el-row :gutter="48">
-              <el-col :span="24">
-                <el-form-item label="发布人" prop="userId">
-                  <el-select style="width: 100%" v-model="formData.userId" placeholder="Select">
-                    <el-option
-                      v-for="item in userIdOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="48">
-              <el-col :span="24">
-                <el-form-item label="文章详情" prop="content">
-                  <div class="editor-container">
-                    <Toolbar
-                      style="border-bottom: 1px solid #ccc"
-                      :editor="editorRef"
-                      :defaultConfig="toolbarConfig"
-                      mode="default"
-                    />
-                    <Editor
-                      style="height: 500px; width: 100%; overflow-y: hidden"
-                      v-model="formData.content"
-                      :defaultConfig="editorConfig"
-                      mode="default"
-                      @onCreated="handleCreated"
-                    />
-                  </div>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-        </template>
+              <el-col :span="12"
+                ><el-form-item label="内容字数" prop="totalWords">
+                  {{ formData.totalWords || "-" }}
+                </el-form-item></el-col
+              >
+              <el-col :span="12"
+                ><el-form-item label="作者" prop="author">
+                  {{ formData.author || "-" }}
+                </el-form-item></el-col
+              >
+              <el-col :span="12"
+                ><el-form-item label="评论数" prop="comSumCount">
+                  {{ formData.comSumCount || 0 }}
+                </el-form-item></el-col
+              >
+              <el-col :span="12"
+                ><el-form-item label="点赞数" prop="praise">
+                  {{ formData.praise || 0 }}
+                </el-form-item></el-col
+              >
+            </template>
+          </el-row>
+          <el-row :gutter="48">
+            <el-col :span="24">
+              <el-form-item label="发布人" prop="userId">
+                <el-select
+                  :disabled="currentStatus === 'preview'"
+                  style="width: 100%"
+                  v-model="formData.userId"
+                  placeholder="Select"
+                >
+                  <el-option v-for="item in userIdOptions" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="48">
+            <el-col :span="24">
+              <el-form-item label="文章详情" prop="content">
+                <div class="editor-container">
+                  <Toolbar
+                    style="border-bottom: 1px solid #ccc"
+                    :editor="editorRef"
+                    :defaultConfig="toolbarConfig"
+                    mode="default"
+                  />
+                  <Editor
+                    style="height: 500px; width: 100%; overflow-y: hidden"
+                    v-model="formData.content"
+                    :defaultConfig="editorConfig"
+                    mode="default"
+                    @onCreated="handleCreated"
+                  />
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
       </div>
       <div class="button-container">
-        <el-button>取消</el-button>
-        <el-button type="primary" @click="submitHandler">保存</el-button>
+        <div v-if="currentStatus === 'preview'">
+          <el-button type="primary" @click="changeCurrentStatus">编辑</el-button>
+        </div>
+        <div v-else>
+          <el-button @click="handleClose">取消</el-button>
+          <el-button type="primary" @click="submitHandler">保存</el-button>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -70,12 +99,15 @@
 
 <script setup>
 import "@wangeditor/editor/dist/css/style.css" // 引入 css
-import { ref, onMounted, shallowRef, onBeforeUnmount } from "vue"
+import { ref, shallowRef, onBeforeUnmount, watch } from "vue"
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
 import { getVirtuallyUserList } from "@/api/user"
 import { articleUpdate } from "@/api/article"
 import { getToken } from "@/utils/cache/cookies"
 import { ElMessage } from "element-plus"
+import { formatDateTime } from "@/utils"
+
+//#region 虚拟用户列表
 const userIdOptions = ref([])
 const getVirtuaUserList = () => {
   getVirtuallyUserList().then((res) => {
@@ -90,7 +122,9 @@ const getVirtuaUserList = () => {
   })
 }
 getVirtuaUserList()
+//#endregion
 
+//#region wangEditor config
 const editorRef = shallowRef()
 const toolbarConfig = {}
 const editorConfig = {
@@ -109,11 +143,6 @@ const editorConfig = {
     }
   }
 }
-onMounted(() => {
-  setTimeout(() => {
-    formData.value.content = "<p style='color: red'>oho~</p>"
-  }, 1500)
-})
 onBeforeUnmount(() => {
   const editor = editorRef.value
   if (editor == null) return
@@ -121,9 +150,61 @@ onBeforeUnmount(() => {
 })
 const handleCreated = (editor) => {
   editorRef.value = editor // 记录 editor 实例，重要！
+  setEditorDisableStatus(currentStatus.value === "preview")
 }
+//#endregion
 
 const emit = defineEmits(["close"])
+const handleClose = (flag) => {
+  emit("close", flag)
+}
+
+const articleFormIns = ref(null)
+const formData = ref({
+  title: null,
+  content: "",
+  userId: null,
+  storyType: 1,
+  id: null,
+  status: 1,
+  publish: null,
+  totalWords: null,
+  author: null,
+  comSumCount: null,
+  praise: null
+})
+const formRules = ref({
+  title: [
+    {
+      required: true,
+      message: "请输入文章标题!",
+      trigger: "blur"
+    }
+  ],
+  userId: [
+    {
+      required: true,
+      message: "请选择发布人!",
+      trigger: ["blur", "change"]
+    }
+  ]
+})
+const submitHandler = () => {
+  articleFormIns.value.validate((valid) => {
+    if (valid) {
+      console.log("formData", formData.value)
+      const { name, content, userId } = formData.value
+      articleUpdate({ title: name, content, userId }).then((res) => {
+        if (res.code === 1) {
+          ElMessage.success("保存文章成功！")
+          handleClose(true)
+        }
+      })
+    }
+  })
+}
+//#region display datas
+const currentStatus = ref("add")
 const props = defineProps({
   dialogVisible: {
     type: Boolean,
@@ -138,49 +219,50 @@ const props = defineProps({
     }
   }
 })
-
-const handleClose = (flag) => {
-  emit("close", flag)
+watch(
+  () => props.dataset,
+  (datas) => {
+    console.log("datas", datas)
+    currentStatus.value = datas.status
+    setEditorDisableStatus(currentStatus.value === "preview")
+    if (datas.datas.id) {
+      formData.value = { ...formData.value, ...datas.datas }
+      formData.value.title = datas.datas.name
+    } else {
+      resetFormData()
+    }
+  },
+  { deep: true }
+)
+const resetFormData = () => {
+  formData.value = {
+    title: null,
+    content: "",
+    userId: null,
+    storyType: 1,
+    id: null,
+    status: 1,
+    publish: null,
+    totalWords: null,
+    author: null,
+    comSumCount: null,
+    praise: null
+  }
 }
-
-const articleFormIns = ref(null)
-const formData = ref({
-  title: null,
-  content: "<p>hello</p>",
-  userId: null,
-  storyType: 1,
-  id: null,
-  status: 1
-})
-const formRules = ref({
-  title: [
-    {
-      required: true,
-      message: "请输入文章标题!",
-      trigger: "blur"
-    }
-  ],
-  userId: [
-    {
-      required: true,
-      message: "请选择发布人!",
-      trigger: "blur"
-    }
-  ]
-})
-const submitHandler = () => {
-  articleFormIns.value.validate((valid) => {
-    if (valid) {
-      console.log("formData", formData.value)
-      articleUpdate(formData.value).then((res) => {
-        if (res.code === 1) {
-          ElMessage.success("保存文章成功！")
-          handleClose(true)
-        }
-      })
-    }
-  })
+const setEditorDisableStatus = (isDisable) => {
+  const editor = editorRef.value
+  if (!editor) return
+  if (isDisable) {
+    editor.disable()
+  } else {
+    editor.enable()
+  }
 }
+const changeCurrentStatus = () => {
+  currentStatus.value = "edit"
+  setEditorDisableStatus(false)
+}
+//#endregion
 </script>
 
 <style lang="scss" scoped>

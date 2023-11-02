@@ -12,7 +12,7 @@
         </el-col>
         <el-col :span="5">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
-          <el-button type="primary" :icon="CirclePlus" @click="addNewArticle">新增文章</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="articleAddOpen">新增文章</el-button>
         </el-col>
       </el-row>
     </div>
@@ -21,7 +21,7 @@
         <el-table-column type="index" label="序号" width="60" />
         <el-table-column prop="name" label="标题">
           <template #default="scope">
-            <span class="link-button" @click="linkButtonClick(scope.row.name)">{{ scope.row.name }}</span>
+            <span class="link-button" @click="articlePreviewOpen(scope.row)">{{ scope.row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="author" label="作者">
@@ -49,7 +49,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="150">
           <template #default="scope">
-            <el-button type="primary" link bg size="small" @click="handleUpdate(scope.row)">编辑</el-button>
+            <el-button type="primary" link bg size="small" @click="articleEditOpen(scope.row)">编辑</el-button>
             <el-button type="danger" link bg size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -75,7 +75,8 @@ import { ElMessageBox, ElMessage } from "element-plus"
 import ArticleDialog from "./components/articleDialog.vue"
 import { getArticleList, deleteArticle, updateArticleStatus } from "@/api/article"
 import { formatDateTime } from "@/utils"
-// auditStatus - 1: 通过，2: 未审核
+//#region 查询
+// status - 1: 未审核，2: 已审核
 const keyword = ref(null)
 const tableData = ref([])
 const status = ref(null)
@@ -128,7 +129,9 @@ const handleCurrentChange = (page) => {
   pageVO.value.page = page
   initDatas()
 }
+//#endregion
 
+//#region 删除、修改状态
 const handleDelete = ({ id }) => {
   ElMessageBox.confirm("确定删除该文章?", "警告", {
     confirmButtonText: "确定",
@@ -145,7 +148,6 @@ const handleDelete = ({ id }) => {
       console.log("cancel the delete！")
     })
 }
-
 const auditStatusChange = ({ id, status }) => {
   updateArticleStatus({
     status,
@@ -156,27 +158,41 @@ const auditStatusChange = ({ id, status }) => {
     }
   })
 }
+//#endregion
 
+//#region 新增、编辑、预览弹框
 const dialogVisible = ref(false)
 const dialogData = ref({
   title: "新增文章",
+  status: "add", // 新增 - add, 预览 - preview, 编辑 - edit
   datas: {}
 })
-const addNewArticle = () => {
+const articleAddOpen = () => {
   dialogData.value.title = "新增文章"
+  dialogData.value.status = "add"
+  dialogData.value.datas = {}
+  dialogVisible.value = true
+}
+const articleEditOpen = (item) => {
+  dialogData.value.title = "编辑文章"
+  dialogData.value.status = "edit"
+  dialogData.value.datas = item
+  dialogVisible.value = true
+}
+const articlePreviewOpen = (item) => {
+  dialogData.value.title = "文章详情"
+  dialogData.value.status = "preview"
+  dialogData.value.datas = item
   dialogVisible.value = true
 }
 const modelCloaseHandler = (freshFlag) => {
   dialogVisible.value = false
+  dialogData.value.datas = {}
   if (freshFlag === true) {
     initDatas()
   }
 }
-const handleUpdate = (item) => {
-  dialogData.value.title = "编辑文章"
-  dialogData.value.datas = item
-  dialogVisible.value = true
-}
+//#endregion
 </script>
 
 <style lang="scss" scoped>
