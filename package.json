@@ -12,6 +12,7 @@
     "url": "https://github.com/un-pany/v3-admin-vite.git"
   },
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build:stage": "vue-tsc --noEmit && vite build --mode staging",
     "build:prod": "vue-tsc --noEmit && vite build",
