@@ -29,10 +29,10 @@
             <span class="link-button" @click="linkButtonClick(scope.row.author)">{{ scope.row.author }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="comSumCount" label="评论数" width="70" />
-        <el-table-column prop="readingUserCount" label="浏览量" width="70" />
-        <el-table-column prop="praise" label="点赞" width="70" />
-        <el-table-column prop="publish" label="发布时间" width="160">
+        <el-table-column prop="comSumCount" label="评论数" width="100" />
+        <el-table-column prop="readingUserCount" label="浏览量" width="100" />
+        <el-table-column prop="praise" label="点赞" width="100" />
+        <el-table-column prop="publish" label="发布时间" width="200">
           <template #default="scope">
             <span>{{ formatDateTime(scope.row.publish) }}</span>
           </template>

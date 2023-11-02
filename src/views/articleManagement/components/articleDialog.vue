@@ -7,7 +7,7 @@
       width="1000"
       :before-close="handleClose"
     >
-      <div class="article-detail">
+      <div class="article-detail" v-loading="dialogLoading">
         <el-form label-position="left" label-width="120px" ref="articleFormIns" :rules="formRules" :model="formData">
           <el-row :gutter="48">
             <el-col :span="24">
@@ -54,7 +54,7 @@
                   :disabled="currentStatus === 'preview'"
                   style="width: 100%"
                   v-model="formData.userId"
-                  placeholder="Select"
+                  placeholder="请选择发布人"
                 >
                   <el-option v-for="item in userIdOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
@@ -102,7 +102,7 @@ import "@wangeditor/editor/dist/css/style.css" // 引入 css
 import { ref, shallowRef, onBeforeUnmount, watch } from "vue"
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
 import { getVirtuallyUserList } from "@/api/user"
-import { articleUpdate } from "@/api/article"
+import { articleUpdate, getArticleDetail } from "@/api/article"
 import { getToken } from "@/utils/cache/cookies"
 import { ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils"
@@ -159,9 +159,10 @@ const handleClose = (flag) => {
   emit("close", flag)
 }
 
+//#region 保存、更新
 const articleFormIns = ref(null)
 const formData = ref({
-  title: null,
+  name: null,
   content: "",
   userId: null,
   storyType: 1,
@@ -174,7 +175,7 @@ const formData = ref({
   praise: null
 })
 const formRules = ref({
-  title: [
+  name: [
     {
       required: true,
       message: "请输入文章标题!",
@@ -193,8 +194,12 @@ const submitHandler = () => {
   articleFormIns.value.validate((valid) => {
     if (valid) {
       console.log("formData", formData.value)
-      const { name, content, userId } = formData.value
-      articleUpdate({ title: name, content, userId }).then((res) => {
+      const { name, content, userId, storyType } = formData.value
+      const params = { name, content, userId, storyType }
+      if (props.dataset.datas.id) {
+        params.id = props.dataset.datas.id
+      }
+      articleUpdate(params).then((res) => {
         if (res.code === 1) {
           ElMessage.success("保存文章成功！")
           handleClose(true)
@@ -203,7 +208,10 @@ const submitHandler = () => {
     }
   })
 }
+//#endregion
+
 //#region display datas
+const dialogLoading = ref(false)
 const currentStatus = ref("add")
 const props = defineProps({
   dialogVisible: {
@@ -226,17 +234,28 @@ watch(
     currentStatus.value = datas.status
     setEditorDisableStatus(currentStatus.value === "preview")
     if (datas.datas.id) {
-      formData.value = { ...formData.value, ...datas.datas }
-      formData.value.title = datas.datas.name
+      displayArtilceDetail(datas.datas.id)
     } else {
       resetFormData()
     }
   },
   { deep: true }
 )
+const displayArtilceDetail = (id) => {
+  dialogLoading.value = true
+  getArticleDetail(id)
+    .then((res) => {
+      if (res.code === 1) {
+        formData.value = { ...formData.value, ...res.data }
+      }
+    })
+    .finally(() => {
+      dialogLoading.value = false
+    })
+}
 const resetFormData = () => {
   formData.value = {
-    title: null,
+    name: null,
     content: "",
     userId: null,
     storyType: 1,

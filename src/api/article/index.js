@@ -48,3 +48,15 @@ export function updateArticleStatus(params) {
     params
   })
 }
+
+/**
+ * 获取文章详情
+ * @param storyId
+ * @returns
+ */
+export function getArticleDetail(storyId) {
+  return request({
+    url: `/story/view/${storyId}`,
+    method: "get"
+  })
+}
