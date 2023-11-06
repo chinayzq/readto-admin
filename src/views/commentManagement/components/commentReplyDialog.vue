@@ -1,7 +1,7 @@
 <template>
   <div class="comment-reply-dialog">
     <el-dialog
-      v-model="props.dataset.show"
+      v-model="datas.show"
       :close-on-click-modal="false"
       title="回复列表"
       width="1200"
@@ -74,8 +74,8 @@
 
 <script setup>
 import { formatDateTime } from "@/utils"
-import { ref, watch } from "vue"
-
+import { computed, ref, watch } from "vue"
+const datas = computed(() => props.dataset)
 const props = defineProps({
   dataset: {
     type: Object,
@@ -114,7 +114,6 @@ const replyDetails = ref({
   replyDetail: "这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题"
 })
 const initDatas = (id) => {
-  console.log(111)
   listLoading.value = true
   setTimeout(() => {
     listLoading.value = false
