@@ -61,6 +61,23 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: "/",
+    component: Layouts,
+    redirect: "/commentManagement",
+    children: [
+      {
+        path: "commentManagement",
+        component: () => import("@/views/commentManagement/index.vue"),
+        name: "commentManagement",
+        meta: {
+          title: "评论管理",
+          svgIcon: "user",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
     path: "/article",
     component: Layouts,
     name: "article",
