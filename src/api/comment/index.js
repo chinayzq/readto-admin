@@ -9,7 +9,7 @@ export function getCommentFirstList(params) {
   })
 }
 
-/** 获取一级评论列表 */
+/** 删除一级评论列表 */
 export function deleteCommentFirst(params) {
   return request({
     url: "/comment/first/del",
@@ -27,6 +27,27 @@ export function deleteCommentFirst(params) {
 export function statusCommentFirst(params) {
   return request({
     url: "/comment/first/status",
+    method: "get",
+    params
+  })
+}
+
+/**
+ * 二级评论列表
+ * @param id comment id
+ */
+export function getCommentSecondList(params) {
+  return request({
+    url: "/comment/second/list",
+    method: "get",
+    params
+  })
+}
+
+/** 删除二级评论 */
+export function deleteSecondComment(params) {
+  return request({
+    url: "/comment/second/del",
     method: "get",
     params
   })

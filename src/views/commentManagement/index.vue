@@ -23,30 +23,32 @@
             <span class="link-button" @click="linkButtonClick(scope.row.name)">{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="author" label="发表人">
+        <el-table-column prop="userNickeName" label="发表人" width="120">
           <template #default="scope">
-            <span class="link-button" @click="linkButtonClick(scope.row.author)">{{ scope.row.author }}</span>
+            <span class="link-button" @click="linkButtonClick(scope.row.userNickeName)">{{
+              scope.row.userNickeName
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="comSumCount" label="评价内容" />
-        <el-table-column prop="readingUserCount" label="点赞数" width="100" />
-        <el-table-column prop="replyCount" label="回复数" width="100">
+        <el-table-column prop="commentsContent" label="评价内容" show-overflow-tooltip />
+        <el-table-column prop="likes" label="点赞数" width="90" />
+        <el-table-column prop="subComCount" label="回复数" width="90">
           <template #default="scope">
-            <span class="link-button" @click="replyDialogOpen(scope.row)">{{ scope.row.replyCount }}</span>
+            <span class="link-button" @click="replyDialogOpen(scope.row)">{{ scope.row.subComCount }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="publish" label="发表时间" width="200">
+        <el-table-column prop="createTime" label="发表时间" width="200">
           <template #default="scope">
-            <span>{{ formatDateTime(scope.row.publish) }}</span>
+            <span>{{ formatDateTime(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="审核" width="100">
           <template #default="scope">
             <el-switch
-              @change="auditStatusChange(scope.row)"
+              @change="statusChange(scope.row)"
               v-model="scope.row.status"
-              :active-value="2"
-              :inactive-value="1"
+              :active-value="1"
+              :inactive-value="2"
             />
           </template>
         </el-table-column>
@@ -76,7 +78,7 @@ import { ref } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils"
 import CommentReplyDialog from "./components/commentReplyDialog.vue"
-import { getCommentFirstList } from "@/api/comment"
+import { getCommentFirstList, statusCommentFirst, deleteCommentFirst } from "@/api/comment"
 //#region 查询
 const keyword = ref(null)
 const tableData = ref([])
@@ -103,7 +105,7 @@ const verifyOption = ref([
 ])
 const initDatas = () => {
   listLoading.value = true
-  getCommentFirstList(pageVO.value)
+  getCommentFirstList({ ...pageVO.value, ...{ key: keyword.value }, ...{ status: status.value } })
     .then((res) => {
       tableData.value = res.data.records
       total.value = res.data.total
@@ -125,43 +127,47 @@ const handleCurrentChange = (page) => {
 
 //#region 删除、修改状态
 const handleDelete = ({ id }) => {
-  ElMessageBox.confirm("确定删除该文章?", "警告", {
+  ElMessageBox.confirm("确定删除该评论?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
   })
     .then(() => {
-      // deleteArticle(id).then(() => {
-      //   ElMessage.success("删除成功！")
-      //   initDatas()
-      // })
+      deleteCommentFirst({ id }).then(() => {
+        ElMessage.success("删除成功！")
+        initDatas()
+      })
     })
     .catch(() => {
       console.log("cancel the delete！")
     })
 }
-const auditStatusChange = ({ id, status }) => {
-  // updateArticleStatus({
-  //   status,
-  //   storyId: id
-  // }).then((res) => {
-  //   if (res.code === 1) {
-  //     ElMessage.success("状态更新成功！")
-  //   }
-  // })
+const statusChange = ({ id, status }) => {
+  statusCommentFirst({
+    status,
+    id
+  }).then((res) => {
+    if (res.code === 1) {
+      ElMessage.success("状态更新成功！")
+    }
+  })
 }
 //#endregion
 
 //#region 查看回复
 const replyDialog = ref({
   show: false,
-  id: null
+  id: null,
+  datas: {}
 })
-const replyDialogOpen = ({ id }) => {
-  replyDialog.value.id = id
+const replyDialogOpen = (datas) => {
+  replyDialog.value.id = datas.id
+  replyDialog.value.datas = datas
   replyDialog.value.show = true
 }
 const replyDialogClose = () => {
+  replyDialog.value.id = null
+  replyDialog.value.datas = {}
   replyDialog.value.show = false
 }
 //#endregion
