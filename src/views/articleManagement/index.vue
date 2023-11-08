@@ -83,7 +83,7 @@ const status = ref(null)
 const listLoading = ref(false)
 const pageVO = ref({
   page: 1,
-  size: 10
+  pageSize: 10
 })
 const total = ref(0)
 const verifyOption = ref([
@@ -106,9 +106,7 @@ const initDatas = () => {
     ...{
       storyType: 1,
       keyword: keyword.value,
-      status: status.value,
-      sortBy: "publish",
-      sortOrder: "desc"
+      status: status.value
     },
     ...pageVO.value
   })

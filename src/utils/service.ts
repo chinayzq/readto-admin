@@ -39,6 +39,11 @@ function createService() {
       if (code > 0) {
         // 本系统采用 code === 1 来表示没有业务错误
         return apiData
+      } else if (code === -104) {
+        ElMessage.error("登录失效，请重新登录！")
+        setTimeout(() => {
+          logout()
+        }, 2000)
       } else {
         // 不是正确的 code
         ElMessage.error(apiData.msg || "Error")

@@ -76,26 +76,16 @@ import { ref } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils"
 import CommentReplyDialog from "./components/commentReplyDialog.vue"
+import { getCommentFirstList } from "@/api/comment"
 //#region 查询
 const keyword = ref(null)
-const tableData = ref([
-  {
-    replyCount: 111,
-    publish: 1699232561882,
-    id: 1
-  },
-  {
-    replyCount: 222,
-    publish: 1699232561882,
-    id: 2
-  }
-])
+const tableData = ref([])
 const status = ref(null)
 const listLoading = ref(false)
 const total = ref(0)
 const pageVO = ref({
   page: 1,
-  size: 10
+  pageSize: 10
 })
 const verifyOption = ref([
   {
@@ -113,9 +103,14 @@ const verifyOption = ref([
 ])
 const initDatas = () => {
   listLoading.value = true
-  setTimeout(() => {
-    listLoading.value = false
-  }, 2000)
+  getCommentFirstList(pageVO.value)
+    .then((res) => {
+      tableData.value = res.data.records
+      total.value = res.data.total
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
 }
 initDatas()
 const linkButtonClick = (key) => {
