@@ -3,7 +3,7 @@
     <div class="search-line">
       <el-row :gutter="10">
         <el-col :span="2">
-          <el-select v-model="searchForm.sex" placeholder="性别" clearable>
+          <el-select @change="initDatas" v-model="searchForm.gender" placeholder="性别" clearable>
             <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-col>
@@ -12,18 +12,19 @@
             <el-option v-for="item in ageGroupOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-col>
-        <el-col :span="2">
+        <!-- 暂时不开发等级系统，先注释 -->
+        <!-- <el-col :span="2">
           <el-select v-model="searchForm.level" placeholder="等级" clearable>
             <el-option v-for="item in levelOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-        </el-col>
+        </el-col> -->
         <el-col :span="2">
-          <el-select v-model="searchForm.state" placeholder="状态" clearable>
+          <el-select @change="initDatas" v-model="searchForm.userStatus" placeholder="状态" clearable>
             <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-input v-model="searchForm.searchKey" placeholder="输入昵称或联系方式搜索" />
+          <el-input v-model="searchForm.key" placeholder="输入昵称或联系方式搜索" />
         </el-col>
         <el-col :span="5">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
@@ -36,24 +37,33 @@
         <el-table-column type="index" label="序号" width="60" />
         <el-table-column prop="image" label="头像">
           <template #default="scope">
-            <img v-if="scope.row.headImg" :src="scope.row.headImg" alt="" />
-            <img v-else src="@/assets/user/user_default_icon.png" alt="" />
+            <img class="list-user-icon" v-if="scope.row.headImg" :src="scope.row.headImg" alt="" />
+            <img class="list-user-icon" v-else src="@/assets/user/user_default_icon.png" alt="" />
           </template>
         </el-table-column>
         <el-table-column prop="nickeName" label="昵称" />
         <el-table-column prop="gender" label="性别">
           <template #default="scope">
-            <span>{{ scope.row.gender === 1 ? "男" : "女" }}</span>
+            <span>{{ genderMap[scope.row.gender] }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="age" label="年龄" />
+        <el-table-column prop="age" label="年龄">
+          <template #default="scope">
+            <span>{{ scope.row.age || "-" }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="bindPhone" label="联系方式">
           <template #default="scope">
             <span>{{ scope.row.bindPhone || "-" }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="nextLevel" label="下级" />
-        <el-table-column prop="goldCount" label="金币余额" />
+        <el-table-column prop="subCnt" label="下级" />
+        <el-table-column prop="active" label="激活状态">
+          <template #default="scope">
+            <span>{{ activeLabelMap[scope.row.active] }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="accumulatedGoldCoins" label="金币余额" />
         <el-table-column prop="lastOnlineTime" label="最后登录时间">
           <template #default="scope">
             <span>{{ formatDateTime(scope.row.lastLoginTime) }}</span>
@@ -61,7 +71,7 @@
         </el-table-column>
         <el-table-column prop="status" label="封禁状态">
           <template #default="scope">
-            <el-switch @change="userStatusChange" v-model="scope.row.status" :active-value="1" :inactive-value="2" />
+            <el-switch @change="userStatusChange" v-model="scope.row.status" :active-value="0" :inactive-value="1" />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="150">
@@ -77,7 +87,7 @@
         v-model:current-page="pageVO.page"
         background
         layout="total, prev, pager, next"
-        :total="pageVO.total"
+        :total="total"
         @current-change="handleCurrentChange"
       />
     </div>
@@ -99,15 +109,15 @@ import { formatDateTime } from "@/utils"
 const sexOptions = ref([
   {
     label: "全部",
-    value: "all"
+    value: ""
   },
   {
     label: "男",
-    value: "male"
+    value: 1
   },
   {
     label: "女",
-    value: "female"
+    value: 2
   }
 ])
 const ageGroupOptions = ref([
@@ -144,64 +154,72 @@ const ageGroupOptions = ref([
     value: "10"
   }
 ])
-const levelOptions = ref([
-  {
-    label: "未激活",
-    value: 0
-  },
-  {
-    label: "LV1",
-    value: 1
-  },
-  {
-    label: "LV2",
-    value: 2
-  },
-  {
-    label: "LV3",
-    value: 3
-  },
-  {
-    label: "LV4",
-    value: 4
-  },
-  {
-    label: "LV5",
-    value: 5
-  },
-  {
-    label: "LV6",
-    value: 6
-  }
-])
+// const levelOptions = ref([
+//   {
+//     label: "未激活",
+//     value: 0
+//   },
+//   {
+//     label: "LV1",
+//     value: 1
+//   },
+//   {
+//     label: "LV2",
+//     value: 2
+//   },
+//   {
+//     label: "LV3",
+//     value: 3
+//   },
+//   {
+//     label: "LV4",
+//     value: 4
+//   },
+//   {
+//     label: "LV5",
+//     value: 5
+//   },
+//   {
+//     label: "LV6",
+//     value: 6
+//   }
+// ])
 const stateOptions = ref([
-  { label: "正常", value: 1 },
-  { label: "封禁", value: 2 }
+  { label: "正常", value: 0 },
+  { label: "封禁", value: 1 }
 ])
 //#endregion
 
 //#region 查询
+const activeLabelMap = ref({
+  0: "否",
+  1: "是"
+})
+const genderMap = ref({
+  1: "男",
+  2: "女",
+  0: "未知"
+})
+const total = ref(0)
 const searchForm = ref({
-  sex: null,
+  gender: null,
   ageGroup: null,
-  level: null,
-  state: null,
-  searchKey: null
+  userStatus: null,
+  key: null
 })
 const pageVO = ref({
   page: 1,
-  pageSize: 10,
-  total: 0
+  pageSize: 10
 })
 const tableData = ref([
   {
     image: null,
     nickName: "刘德华",
-    sex: "男",
+    gender: "男",
     age: 18,
     phoneNumber: 18888888888,
-    nextLevel: 15,
-    goldCount: 1234,
+    subCnt: 15,
+    accumulatedGoldCoins: 1234,
     lastOnlineTime: "2023-10-30 08:00:00",
     status: 1
   },
@@ -211,8 +229,8 @@ const tableData = ref([
     sex: "男",
     age: 18,
     phoneNumber: 18888888888,
-    nextLevel: 15,
-    goldCount: 1234,
+    subCnt: 15,
+    accumulatedGoldCoins: 1234,
     lastOnlineTime: "2023-10-30 08:00:00",
     status: 2
   }
@@ -220,11 +238,18 @@ const tableData = ref([
 const tableLoading = ref(false)
 const initDatas = () => {
   tableLoading.value = true
-  getUserList(pageVO.value)
+  getUserList({
+    ...pageVO.value,
+    ...searchForm.value,
+    ...{
+      // isDes: true,
+      // orderColumns: ["lastOnlineTime"]
+    }
+  })
     .then((res) => {
-      const { total, records } = res.data
+      const { records } = res.data
       tableData.value = records
-      pageVO.value.total = total
+      total.value = res.data.total
     })
     .finally(() => {
       tableLoading.value = false
@@ -287,6 +312,10 @@ const closeGoldOperation = () => {
     display: flex;
     justify-content: center;
     margin: 15px 0;
+  }
+  .list-user-icon {
+    height: 30px;
+    width: 30px;
   }
 }
 </style>
