@@ -106,8 +106,7 @@ const initDatas = () => {
       storyType: 2,
       keyword: keyword.value,
       status: status.value,
-      sortBy: "publish",
-      sortOrder: "desc"
+      orderColumns: ["publish"]
     },
     ...pageVO.value
   })
