@@ -8,7 +8,7 @@
           </el-select>
         </el-col>
         <el-col :span="2">
-          <el-select v-model="searchForm.ageGroup" placeholder="年龄段" clearable>
+          <el-select @change="ageRangeChange" v-model="ageRange" placeholder="年龄段" clearable>
             <el-option v-for="item in ageGroupOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-col>
@@ -24,11 +24,24 @@
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-input v-model="searchForm.key" placeholder="输入昵称或联系方式搜索" />
+          <el-input @input="initDatas" v-model="searchForm.key" placeholder="输入昵称或联系方式搜索" />
         </el-col>
         <el-col :span="5">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
-          <el-button type="primary" :icon="CirclePlus" @click="addNewUser">添加用户</el-button>
+          <el-button v-if="!searchForm.userId" type="primary" :icon="CirclePlus" @click="addNewUser"
+            >添加用户</el-button
+          >
+          <el-button
+            v-else
+            type="primary"
+            @click="
+              () => {
+                searchForm.userId = null
+                initDatas()
+              }
+            "
+            >返回上级列表</el-button
+          >
         </el-col>
       </el-row>
     </div>
@@ -57,21 +70,30 @@
             <span>{{ scope.row.bindPhone || "-" }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="subCnt" label="下级" />
+        <el-table-column prop="subCnt" label="下级">
+          <template #default="scope">
+            <span class="link-button" @click="lookSubList(scope.row)">{{ scope.row.subCnt }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="active" label="激活状态">
           <template #default="scope">
             <span>{{ activeLabelMap[scope.row.active] }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="accumulatedGoldCoins" label="金币余额" />
-        <el-table-column prop="lastOnlineTime" label="最后登录时间">
+        <el-table-column prop="lastOnlineTime" label="最后登录时间" width="160">
           <template #default="scope">
             <span>{{ formatDateTime(scope.row.lastLoginTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="封禁状态">
+        <el-table-column prop="userStatus" label="封禁状态">
           <template #default="scope">
-            <el-switch @change="userStatusChange" v-model="scope.row.status" :active-value="0" :inactive-value="1" />
+            <el-switch
+              @change="userStatusChange(scope.row)"
+              v-model="scope.row.userStatus"
+              :active-value="1"
+              :inactive-value="0"
+            />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="150">
@@ -103,8 +125,10 @@ import { ref } from "vue"
 import UserAddDialog from "./components/userAddDialog.vue"
 import UserDetailDialog from "./components/userDetailDialog.vue"
 import GoldOperaionDialog from "./components/goldOperationDialog.vue"
-import { getUserList } from "@/api/user"
+import { getUserList, changeUserStatus } from "@/api/user"
 import { formatDateTime } from "@/utils"
+import { ElMessageBox, ElMessage } from "element-plus"
+
 //#region 所有options
 const sexOptions = ref([
   {
@@ -120,10 +144,20 @@ const sexOptions = ref([
     value: 2
   }
 ])
+const ageRange = ref(null)
+const ageRangeMap = ref({
+  50: [1950, 1959],
+  60: [1960, 1969],
+  70: [1970, 1979],
+  80: [1980, 1989],
+  90: [1990, 1999],
+  "00": [2000, 2009],
+  10: [2010, 2019]
+})
 const ageGroupOptions = ref([
   {
     label: "全部",
-    value: "all"
+    value: null
   },
   {
     label: "50后",
@@ -203,38 +237,16 @@ const genderMap = ref({
 const total = ref(0)
 const searchForm = ref({
   gender: null,
-  ageGroup: null,
+  ageRange: null,
   userStatus: null,
-  key: null
+  key: null,
+  userId: null
 })
 const pageVO = ref({
   page: 1,
   pageSize: 10
 })
-const tableData = ref([
-  {
-    image: null,
-    nickName: "刘德华",
-    gender: "男",
-    age: 18,
-    phoneNumber: 18888888888,
-    subCnt: 15,
-    accumulatedGoldCoins: 1234,
-    lastOnlineTime: "2023-10-30 08:00:00",
-    status: 1
-  },
-  {
-    image: null,
-    nickName: "张学友",
-    sex: "男",
-    age: 18,
-    phoneNumber: 18888888888,
-    subCnt: 15,
-    accumulatedGoldCoins: 1234,
-    lastOnlineTime: "2023-10-30 08:00:00",
-    status: 2
-  }
-])
+const tableData = ref([])
 const tableLoading = ref(false)
 const initDatas = () => {
   tableLoading.value = true
@@ -260,11 +272,26 @@ const handleCurrentChange = (page) => {
   pageVO.value.page = page
   initDatas()
 }
+const ageRangeChange = (range) => {
+  searchForm.value.ageRange = ageRangeMap.value[range]
+  initDatas()
+}
+const lookSubList = (row) => {
+  searchForm.value.userId = row.id
+  initDatas()
+}
 //#endregion
 
 //#region 修改
-const userStatusChange = () => {
-  console.log("修改用户状态")
+const userStatusChange = ({ userStatus, id }) => {
+  changeUserStatus({
+    userStatus,
+    id
+  }).then((res) => {
+    if (res.code === 1) {
+      ElMessage.success("状态更新成功！")
+    }
+  })
 }
 //#endregion
 
@@ -316,6 +343,10 @@ const closeGoldOperation = () => {
   .list-user-icon {
     height: 30px;
     width: 30px;
+  }
+  .link-button {
+    color: #409eff;
+    cursor: pointer;
   }
 }
 </style>

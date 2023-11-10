@@ -186,7 +186,7 @@ const formRules = ref({
     {
       required: true,
       message: "请选择发布人!",
-      trigger: ["blur", "change"]
+      trigger: "blur"
     }
   ]
 })

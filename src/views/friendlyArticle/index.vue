@@ -63,6 +63,7 @@
         />
       </div>
     </div>
+    <ArticleDialog :dialogVisible="dialogVisible" @close="modelCloaseHandler" :dataset="dialogData" />
   </div>
 </template>
 
@@ -72,6 +73,7 @@ import { ref } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
 import { getArticleList, deleteArticle, updateArticleStatus } from "@/api/article"
 import { formatDateTime } from "@/utils"
+import ArticleDialog from "../articleManagement/components/articleDialog.vue"
 //#region 查询
 // status - 1: 未审核，2: 已审核
 const keyword = ref(null)
@@ -154,6 +156,34 @@ const auditStatusChange = ({ id, status }) => {
       ElMessage.success("状态更新成功！")
     }
   })
+}
+//#endregion
+
+//#region 新增、编辑、预览弹框
+const dialogVisible = ref(false)
+const dialogData = ref({
+  title: "新增文章",
+  status: "add", // 新增 - add, 预览 - preview, 编辑 - edit
+  datas: {}
+})
+const articleEditOpen = (item) => {
+  dialogData.value.title = "编辑文章"
+  dialogData.value.status = "edit"
+  dialogData.value.datas = item
+  dialogVisible.value = true
+}
+const articlePreviewOpen = (item) => {
+  dialogData.value.title = "文章详情"
+  dialogData.value.status = "preview"
+  dialogData.value.datas = item
+  dialogVisible.value = true
+}
+const modelCloaseHandler = (freshFlag) => {
+  dialogVisible.value = false
+  dialogData.value.datas = {}
+  if (freshFlag === true) {
+    initDatas()
+  }
 }
 //#endregion
 </script>

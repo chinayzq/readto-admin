@@ -17,3 +17,21 @@ export function getVirtuallyUserList(params) {
     params
   })
 }
+
+/** 获取用户详情 */
+export function getUserDetail(params) {
+  return request({
+    url: "/user/info",
+    method: "get",
+    params
+  })
+}
+
+/** 修改用户状态 */
+export function changeUserStatus(data) {
+  return request({
+    url: "/user/status",
+    method: "post",
+    data
+  })
+}
