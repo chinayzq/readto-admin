@@ -52,3 +52,12 @@ export function deleteSecondComment(params) {
     params
   })
 }
+
+/** 删除二级评论 */
+export function secondCommentStatus(params) {
+  return request({
+    url: "/comment/second/status",
+    method: "get",
+    params
+  })
+}

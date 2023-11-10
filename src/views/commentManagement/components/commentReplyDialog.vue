@@ -44,6 +44,7 @@
             <el-table-column prop="status" label="审核" width="100">
               <template #default="scope">
                 <el-switch
+                  :before-change="beforeChangeColumn"
                   @change="auditStatusChange(scope.row)"
                   v-model="scope.row.status"
                   :active-value="1"
@@ -75,7 +76,7 @@
 <script setup>
 import { formatDateTime } from "@/utils"
 import { computed, ref, watch } from "vue"
-import { getCommentSecondList, deleteSecondComment } from "@/api/comment"
+import { getCommentSecondList, deleteSecondComment, secondCommentStatus } from "@/api/comment"
 import { ElMessageBox, ElMessage } from "element-plus"
 const datas = computed(() => props.dataset)
 const props = defineProps({
@@ -144,7 +145,22 @@ const handleCurrentChange = (page) => {
 //#endregion
 
 //#region 修改、删除
-const auditStatusChange = () => {}
+const switchState = ref(false)
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
+}
+const auditStatusChange = ({ id, status }) => {
+  if (!switchState.value) return
+  secondCommentStatus({
+    status,
+    id
+  }).then((res) => {
+    if (res.code === 1) {
+      ElMessage.success("状态更新成功！")
+    }
+  })
+}
 const handleDelete = ({ id }) => {
   ElMessageBox.confirm("确定删除该评论?", "警告", {
     confirmButtonText: "确定",

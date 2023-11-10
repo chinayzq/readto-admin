@@ -35,3 +35,12 @@ export function changeUserStatus(data) {
     data
   })
 }
+
+/** 用户金币操作 */
+export function userGoldOperation(data) {
+  return request({
+    url: "/gold/edit",
+    method: "post",
+    data
+  })
+}

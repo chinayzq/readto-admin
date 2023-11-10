@@ -45,6 +45,7 @@
         <el-table-column prop="status" label="审核" width="100">
           <template #default="scope">
             <el-switch
+              :before-change="beforeChangeColumn"
               @change="statusChange(scope.row)"
               v-model="scope.row.status"
               :active-value="1"
@@ -96,11 +97,11 @@ const verifyOption = ref([
   },
   {
     label: "审核通过",
-    value: 2
+    value: 1
   },
   {
     label: "未审核",
-    value: 1
+    value: 2
   }
 ])
 const initDatas = () => {
@@ -142,7 +143,9 @@ const handleDelete = ({ id }) => {
       console.log("cancel the delete！")
     })
 }
-const statusChange = ({ id, status }) => {
+const switchState = ref(false)
+const statusChange = ({ status, id }) => {
+  if (!switchState.value) return
   statusCommentFirst({
     status,
     id
@@ -151,6 +154,10 @@ const statusChange = ({ id, status }) => {
       ElMessage.success("状态更新成功！")
     }
   })
+}
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
 }
 //#endregion
 

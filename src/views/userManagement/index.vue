@@ -324,8 +324,11 @@ const openGoldOperation = (item) => {
   userGoldDatas.value = item
   goldOperationVisible.value = true
 }
-const closeGoldOperation = () => {
+const closeGoldOperation = (fresh) => {
   goldOperationVisible.value = false
+  if (fresh === true) {
+    initDatas()
+  }
 }
 //#endregion
 </script>
