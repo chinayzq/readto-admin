@@ -12,6 +12,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "allowJs": true,
     "resolveJsonModule": true,
     /** https://cn.vitejs.dev/guide/features.html#typescript-compiler-options */
     "isolatedModules": true,

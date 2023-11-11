@@ -10,20 +10,20 @@
       <div class="gold-operaion-detail">
         <div class="detail-line">
           <span class="label">用户：</span>
-          <span class="value">{{ goldForm.nickeName }}</span>
+          <span class="value">{{ userInfo.nickeName }}</span>
         </div>
         <div class="detail-line">
           <span class="label">操作：</span>
           <span class="value">
             <el-radio-group v-model="goldForm.calcType">
-              <el-radio label="1">增加</el-radio>
-              <el-radio label="2">减少</el-radio>
+              <el-radio :label="1">增加</el-radio>
+              <el-radio :label="2">减少</el-radio>
             </el-radio-group>
           </span>
         </div>
         <div class="detail-line">
           <span class="label">原金币：</span>
-          <span class="value">{{ goldForm.accumulatedGoldCoins }}</span>
+          <span class="value">{{ userInfo.accumulatedGoldCoins }}</span>
         </div>
         <div class="detail-line">
           <span class="label">操作金币：</span>
@@ -75,26 +75,41 @@ const dialogShow = computed(() => props.dialogVisible)
 watch(
   () => props.dataset,
   (datas) => {
-    console.log("datas", datas)
-    goldForm.value.nickeName = datas.nickeName
-    goldForm.value.accumulatedGoldCoins = datas.accumulatedGoldCoins
     goldForm.value.userId = datas.id
+    userInfo.value.nickeName = datas.nickeName
+    userInfo.value.accumulatedGoldCoins = datas.accumulatedGoldCoins
   },
   { deep: true }
 )
 
 const emit = defineEmits(["close"])
 const handleClose = (flag) => {
+  clearFormHandler()
   emit("close", flag)
 }
-
-const goldForm = ref({
+const clearFormHandler = () => {
+  userInfo.value.nickeName = null
+  userInfo.value.accumulatedGoldCoins = null
+  goldForm.value = {
+    amount: 0,
+    calcType: 1,
+    optDes: null,
+    optStatus: 200,
+    status: 3,
+    userId: null,
+  }
+}
+const userInfo = ref({
   nickeName: null,
-  accumulatedGoldCoins: 0,
-  userId: null,
-  optDes: null,
+  accumulatedGoldCoins: 0
+})
+const goldForm = ref({
   amount: 0,
-  calcType: "1"
+  calcType: 1,
+  optDes: null,
+  optStatus: 200,
+  status: 3,
+  userId: null,
 })
 const submitLoading = ref(false)
 const goldOpeSubmit = () => {
