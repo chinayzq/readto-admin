@@ -80,7 +80,7 @@
             <span>{{ activeLabelMap[scope.row.active] }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="accumulatedGoldCoins" label="金币余额" />
+        <el-table-column prop="availableGoldCoins" label="金币余额" />
         <el-table-column prop="lastOnlineTime" label="最后登录时间" width="160">
           <template #default="scope">
             <span>{{ formatDateTime(scope.row.lastLoginTime) }}</span>
