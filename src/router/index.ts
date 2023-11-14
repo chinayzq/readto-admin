@@ -106,73 +106,73 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: "/task",
+    component: Layouts,
+    name: "task",
+    redirect: "/task/newbieTask",
+    meta: {
+      title: "奖励配置",
+      svgIcon: "prize"
+    },
+    children: [
+      {
+        path: "newbieTask",
+        component: () => import("@/views/newbieTask/index.vue"),
+        name: "newbieTask",
+        meta: {
+          title: "新手任务",
+          keepAlive: true
+        }
+      },
+      {
+        path: "dailyTasks",
+        component: () => import("@/views/dailyTasks/index.vue"),
+        name: "dailyTasks",
+        meta: {
+          title: "日常任务",
+          keepAlive: true
+        }
+      },
+      {
+        path: "signInConfig",
+        component: () => import("@/views/signInConfig/index.vue"),
+        name: "signInConfig",
+        meta: {
+          title: "签到配置",
+          keepAlive: true
+        }
+      },
+      {
+        path: "invitationConfig",
+        component: () => import("@/views/invitationConfig/index.vue"),
+        name: "invitationConfig",
+        meta: {
+          title: "邀请配置",
+          keepAlive: true
+        }
+      },
+      {
+        path: "activationConfig",
+        component: () => import("@/views/activationConfig/index.vue"),
+        name: "activationConfig",
+        meta: {
+          title: "激活配置",
+          keepAlive: true
+        }
+      },
+      {
+        path: "readTimeRewardSettings",
+        component: () => import("@/views/readTimeRewardSettings/index.vue"),
+        name: "readTimeRewardSettings",
+        meta: {
+          title: "阅读计时奖励设置",
+          keepAlive: true
+        }
+      }
+    ]
   }
-  // {
-  //   path: "/task",
-  //   component: Layouts,
-  //   name: "task",
-  //   redirect: "/task/newbieTask",
-  //   meta: {
-  //     title: "奖励配置",
-  //     svgIcon: "prize"
-  //   },
-  //   children: [
-  //     {
-  //       path: "newbieTask",
-  //       component: () => import("@/views/newbieTask/index.vue"),
-  //       name: "newbieTask",
-  //       meta: {
-  //         title: "新手任务",
-  //         keepAlive: true
-  //       }
-  //     },
-  //     {
-  //       path: "dailyTasks",
-  //       component: () => import("@/views/dailyTasks/index.vue"),
-  //       name: "dailyTasks",
-  //       meta: {
-  //         title: "日常任务",
-  //         keepAlive: true
-  //       }
-  //     },
-  //     {
-  //       path: "signInConfig",
-  //       component: () => import("@/views/signInConfig/index.vue"),
-  //       name: "signInConfig",
-  //       meta: {
-  //         title: "签到配置",
-  //         keepAlive: true
-  //       }
-  //     },
-  //     {
-  //       path: "invitationConfig",
-  //       component: () => import("@/views/invitationConfig/index.vue"),
-  //       name: "invitationConfig",
-  //       meta: {
-  //         title: "邀请配置",
-  //         keepAlive: true
-  //       }
-  //     },
-  //     {
-  //       path: "activationConfig",
-  //       component: () => import("@/views/activationConfig/index.vue"),
-  //       name: "activationConfig",
-  //       meta: {
-  //         title: "激活配置",
-  //         keepAlive: true
-  //       }
-  //     },
-  //     {
-  //       path: "readTimeRewardSettings",
-  //       component: () => import("@/views/readTimeRewardSettings/index.vue"),
-  //       name: "readTimeRewardSettings",
-  //       meta: {
-  //         title: "阅读计时奖励设置",
-  //         keepAlive: true
-  //       }
-  //     }
-  //   ]
-  // }
   // {
   //   path: "/unocss",
   //   component: Layouts,
