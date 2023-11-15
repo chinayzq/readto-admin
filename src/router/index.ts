@@ -104,6 +104,15 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "交友内容管理",
           keepAlive: true
         }
+      },
+      {
+        path: "articleCatelog",
+        component: () => import("@/views/articleCatelog/index.vue"),
+        name: "articleCatelog",
+        meta: {
+          title: "分类管理",
+          keepAlive: true
+        }
       }
     ]
   },

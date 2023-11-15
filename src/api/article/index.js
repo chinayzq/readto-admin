@@ -60,3 +60,42 @@ export function getArticleDetail(storyId) {
     method: "get"
   })
 }
+
+/** 获取分类列表 */
+export function getArticleCatelogList(params) {
+  return request({
+    url: "/tag/list",
+    method: "get",
+    params
+  })
+}
+
+// 新增&编辑分类
+export function updateArticleCatelog(data) {
+  return request({
+    url: "/tag",
+    method: "post",
+    data
+  })
+}
+
+// 修改分类状态
+export function updateArticleCatelogStatus(data) {
+  return request({
+    url: "/tag",
+    method: "post",
+    data
+  })
+}
+
+/**
+ * 删除文章分类
+ * @param {*} id
+ * @returns
+ */
+export function deleteArticleCatelog(id) {
+  return request({
+    url: `/tag/${id}`,
+    method: "delete"
+  })
+}
