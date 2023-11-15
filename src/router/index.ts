@@ -44,18 +44,31 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: "/",
+    path: "/userManagement",
     component: Layouts,
-    redirect: "/userManagement",
+    name: "userManagement",
+    redirect: "/userManagement/user",
+    meta: {
+      title: "用户管理",
+      svgIcon: "user"
+    },
     children: [
       {
-        path: "userManagement",
-        component: () => import("@/views/userManagement/index.vue"),
-        name: "userManagement",
+        path: "user",
+        component: () => import("@/views/user/index.vue"),
+        name: "user",
         meta: {
           title: "用户管理",
-          svgIcon: "user",
-          affix: true
+          keepAlive: true
+        }
+      },
+      {
+        path: "prohibitedUsers",
+        component: () => import("@/views/prohibitedUsers/index.vue"),
+        name: "prohibitedUsers",
+        meta: {
+          title: "IP封禁与黑名单",
+          keepAlive: true
         }
       }
     ]
