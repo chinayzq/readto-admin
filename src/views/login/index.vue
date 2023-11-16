@@ -14,11 +14,12 @@ const loginFormRef = ref<FormInstance | null>(null)
 
 /** 登录按钮 Loading */
 const loading = ref(false)
+const isDev = import.meta.env.VITE_ENV === 'DEV'
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
-  email: "admin@qq.com",
+  email: isDev ? '111' : "admin@qq.com",
   lang: "en",
-  passWord: "admin123"
+  passWord: isDev ? '111' : "admin123"
   // code: ""
 })
 /** 登录表单校验规则 */

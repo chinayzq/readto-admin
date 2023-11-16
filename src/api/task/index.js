@@ -17,3 +17,12 @@ export function taskStatusChange(params) {
     params
   })
 }
+
+/** 任务编辑 */
+export function updateTask(params) {
+  return request({
+    url: "/task/update",
+    method: "post",
+    params
+  })
+}

@@ -4,13 +4,18 @@
       <el-form label-position="left" label-width="120px" ref="taskFormIns" :rules="formRules" :model="formData">
         <el-row :gutter="48">
           <el-col :span="24">
-            <el-form-item label="阅读时长（S)" prop="readingDuration">
-              <el-input :disabled="true" placeholder="请输阅读时长（S)" v-model="formData.readingDuration" />
+            <el-form-item label="内容：" prop="name">
+              <el-input placeholder="请输内容" v-model="formData.name" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="奖励金币" prop="prizeCount">
-              <el-input placeholder="请输奖励金币" v-model="formData.prizeCount" />
+            <el-form-item label="描述：" prop="des">
+              <el-input placeholder="请输描述" v-model="formData.des" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="奖励金币：" prop="amount">
+              <el-input placeholder="请输奖励金币" v-model="formData.amount" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -27,6 +32,8 @@
 
 <script setup>
 import { computed, ref, watch } from "vue"
+import { updateTask } from '@/api/task'
+import { ElMessage } from "element-plus"
 
 const props = defineProps({
   dataset: {
@@ -53,11 +60,19 @@ const handleClose = (flag) => {
 }
 
 const formData = ref({
-  readingDuration: null,
-  prizeCount: null
+  name: null,
+  des: null,
+  amount: null
 })
 const formRules = ref({
-  prizeCount: [
+  name: [
+    {
+      required: true,
+      message: "请输内容!",
+      trigger: "blur"
+    }
+  ],
+  amount: [
     {
       required: true,
       message: "请输奖励金币!",
@@ -70,7 +85,17 @@ const taskFormIns = ref(null)
 const submitHandler = () => {
   taskFormIns.value.validate((valid) => {
     if (valid) {
-      handleClose(true)
+      const { amount, name, des } = formData.value
+      const { id, taskId } = props.dataset.datas
+      updateTask({
+        amount, name, des, id, taskId 
+      }).then(res => {
+        if(res.code === 1) {
+          ElMessage.success("保存成功！")
+          handleClose(true)
+        }
+      })
+      
     }
   })
 }

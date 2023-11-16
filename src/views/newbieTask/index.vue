@@ -92,7 +92,7 @@ const dialogDatas = ref({
   datas: {}
 })
 const configEditOpen = (row) => {
-  console.log("row", row)
+  row.lang = lang.value
   dialogDatas.value.datas = row
   dialogDatas.value.show = true
 }
