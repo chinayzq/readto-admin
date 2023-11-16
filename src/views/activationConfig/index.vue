@@ -1,13 +1,21 @@
 <template>
   <div class="activation-task-component app-container">
+    <div class="search-line">
+      <el-row :gutter="20">
+        <el-col :span="2">
+          <LangSelector @change="langChange" />
+        </el-col>
+      </el-row>
+    </div>
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="content" label="内容" />
-        <el-table-column prop="condition" label="条件" />
+        <el-table-column prop="name" label="内容" />
+        <el-table-column prop="des" label="描述信息" />
         <el-table-column prop="status" label="开关">
           <template #default="scope">
             <el-switch
+              :before-change="beforeChangeColumn"
               @change="auditStatusChange(scope.row)"
               v-model="scope.row.status"
               :active-value="1"
@@ -22,55 +30,62 @@
 
 <script setup>
 import { ref } from "vue"
+import { getTaskList, taskStatusChange } from "@/api/task"
+import { ElMessage } from "element-plus"
+import LangSelector from "@/components/LangSelector/index.vue"
 
+const lang = ref("zh")
 const listLoading = ref(false)
 // status： 1-开，2-关
-const tableData = ref([
-  {
-    content: "单击导航",
-    condition: "底部导航每个页面点击1次",
-    status: 1
-  },
-  {
-    content: "查看文章或心情",
-    condition: "点开1次文章或者心情内容",
-    status: 1
-  },
-  {
-    content: "点赞文章或心情",
-    condition: "给文章或心情点赞",
-    status: 2
-  },
-  {
-    content: "签到",
-    condition: "进入签到界面签到1次",
-    status: 1
-  },
-  {
-    content: "做任务",
-    condition: "不限任务内容，做三个以上任务",
-    status: 1
-  },
-  {
-    content: "判断真是设备用户",
-    condition: "获取设备数据",
-    status: 1
-  }
-])
+const tableData = ref([])
 const initDatas = () => {
   listLoading.value = true
-  setTimeout(() => {
-    listLoading.value = false
-  }, 1000)
+  getTaskList({
+    page: 1,
+    pageSize: 20,
+    type: 400,
+    idDes: false,
+    lang: lang.value,
+    orderColumns: "id"
+  })
+    .then((res) => {
+      if (res.code === 1) {
+        tableData.value = res.data.records
+      }
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
 }
-initDatas()
+const langChange = (value) => {
+  lang.value = value
+  initDatas()
+}
 
-const auditStatusChange = ({ status }) => {
-  console.log("status", status)
+const switchState = ref(false)
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
+}
+const auditStatusChange = ({ status, taskId }) => {
+  if (!switchState.value) return
+  taskStatusChange({
+    status,
+    lang: lang.value,
+    taskId
+  }).then((res) => {
+    if (res.code === 1) {
+      ElMessage.success("修改成功！")
+      initDatas()
+    }
+  })
 }
 </script>
 
 <style lang="scss" scoped>
 .activation-task-component {
+  .search-line {
+    margin-bottom: 20px;
+  }
 }
 </style>

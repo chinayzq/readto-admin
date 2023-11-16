@@ -1,13 +1,22 @@
 <template>
   <div class="readtime-task-component app-container">
+    <div class="search-line">
+      <el-row :gutter="20">
+        <el-col :span="2">
+          <LangSelector @change="langChange" />
+        </el-col>
+      </el-row>
+    </div>
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="readingDuration" label="阅读时长" />
-        <el-table-column prop="prizeCount" label="奖励金币" />
+        <el-table-column prop="name" label="内容" />
+        <el-table-column prop="des" label="描述信息" />
+        <el-table-column prop="amount" label="奖励金币" />
         <el-table-column prop="status" label="开关">
           <template #default="scope">
             <el-switch
+              :before-change="beforeChangeColumn"
               @change="auditStatusChange(scope.row)"
               v-model="scope.row.status"
               :active-value="1"
@@ -29,50 +38,54 @@
 <script setup>
 import { ref } from "vue"
 import ReadingTimeEditDialog from "./components/readingTimeEditDialog.vue"
+import { getTaskList, taskStatusChange } from "@/api/task"
+import { ElMessage } from "element-plus"
+import LangSelector from "@/components/LangSelector/index.vue"
 
+const lang = ref("zh")
 const listLoading = ref(false)
-const tableData = ref([
-  {
-    readingDuration: 30,
-    prizeCount: 100,
-    status: 1
-  },
-  {
-    readingDuration: 60,
-    prizeCount: 200,
-    status: 1
-  },
-  {
-    readingDuration: 180,
-    prizeCount: 600,
-    status: 1
-  },
-  {
-    readingDuration: 300,
-    prizeCount: 10000,
-    status: 1
-  },
-  {
-    readingDuration: 600,
-    prizeCount: 20000,
-    status: 1
-  },
-  {
-    readingDuration: 1800,
-    prizeCount: 60000,
-    status: 2
-  }
-])
+const tableData = ref([])
 const initDatas = () => {
   listLoading.value = true
-  setTimeout(() => {
-    listLoading.value = false
-  }, 1000)
+  getTaskList({
+    page: 1,
+    pageSize: 20,
+    type: 500,
+    idDes: false,
+    lang: lang.value,
+    orderColumns: "id"
+  })
+    .then((res) => {
+      if (res.code === 1) {
+        tableData.value = res.data.records
+      }
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
 }
-initDatas()
+const langChange = (value) => {
+  lang.value = value
+  initDatas()
+}
 
-const auditStatusChange = ({ status }) => {
-  console.log("status", status)
+const switchState = ref(false)
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
+}
+const auditStatusChange = ({ status, taskId }) => {
+  if (!switchState.value) return
+  taskStatusChange({
+    status,
+    lang: lang.value,
+    taskId
+  }).then((res) => {
+    if (res.code === 1) {
+      ElMessage.success("修改成功！")
+      initDatas()
+    }
+  })
 }
 
 const dialogDatas = ref({
@@ -94,5 +107,8 @@ const dialogClose = (fresh) => {
 
 <style lang="scss" scoped>
 .readtime-task-component {
+  .search-line {
+    margin-bottom: 20px;
+  }
 }
 </style>

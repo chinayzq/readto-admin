@@ -1,10 +1,18 @@
 <template>
   <div class="signin-task-component app-container">
+    <div class="search-line">
+      <el-row :gutter="20">
+        <el-col :span="2">
+          <LangSelector @change="langChange" />
+        </el-col>
+      </el-row>
+    </div>
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="condition" label="条件" />
-        <el-table-column prop="prizeCount" label="奖励金币" />
+        <el-table-column prop="name" label="内容" />
+        <el-table-column prop="des" label="描述信息" />
+        <el-table-column prop="amount" label="奖励金币" />
         <el-table-column fixed="right" label="操作" width="150">
           <template #default="scope">
             <el-button type="primary" link bg size="small" @click="configEditOpen(scope.row)">编辑</el-button>
@@ -19,29 +27,35 @@
 <script setup>
 import { ref } from "vue"
 import InviteEditDialog from "./components/inviteEditDialog.vue"
+import { getTaskList } from "@/api/task"
+import LangSelector from "@/components/LangSelector/index.vue"
 
+const lang = ref("zh")
 const listLoading = ref(false)
-const tableData = ref([
-  {
-    condition: "邀请成功用户激活",
-    prizeCount: 12000
-  },
-  {
-    condition: "您朋友连续3天签到",
-    prizeCount: 21000
-  },
-  {
-    condition: "您朋友连续7天，每天阅读3篇文章",
-    prizeCount: 55000
-  }
-])
+const tableData = ref([])
 const initDatas = () => {
   listLoading.value = true
-  setTimeout(() => {
-    listLoading.value = false
-  }, 1000)
+  getTaskList({
+    page: 1,
+    pageSize: 20,
+    type: 300,
+    idDes: true,
+    lang: lang.value,
+    orderColumns: "id"
+  })
+    .then((res) => {
+      if (res.code === 1) {
+        tableData.value = res.data.records
+      }
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
 }
-initDatas()
+const langChange = (value) => {
+  lang.value = value
+  initDatas()
+}
 
 const dialogDatas = ref({
   show: false,
@@ -62,5 +76,8 @@ const dialogClose = (fresh) => {
 
 <style lang="scss" scoped>
 .signin-task-component {
+  .search-line {
+    margin-bottom: 20px;
+  }
 }
 </style>

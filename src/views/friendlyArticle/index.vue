@@ -36,13 +36,19 @@
             <span>{{ formatDateTime(scope.row.publish) }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="status" label="审核状态">
+          <template #default="scope">
+            <span>{{ statusMap[scope.row.status] }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="审核" width="100">
           <template #default="scope">
             <el-switch
+              :before-change="beforeChangeColumn"
               @change="auditStatusChange(scope.row)"
-              v-model="scope.row.status"
-              :active-value="2"
-              :inactive-value="1"
+              v-model="scope.row.statusSuccess"
+              :active-value="true"
+              :inactive-value="false"
             />
           </template>
         </el-table-column>
@@ -75,7 +81,13 @@ import { getArticleList, deleteArticle, updateArticleStatus } from "@/api/articl
 import { formatDateTime } from "@/utils"
 import ArticleDialog from "../articleManagement/components/articleDialog.vue"
 //#region 查询
-// status - 1: 未审核，2: 已审核
+// status -0:草稿 1: 审核中，2: 审核未通过, 3 审核通过
+const statusMap = ref({
+  0: "草稿",
+  1: "审核中",
+  2: "审核未通过",
+  3: "审核通过"
+})
 const keyword = ref(null)
 const tableData = ref([])
 const status = ref(null)
@@ -111,7 +123,10 @@ const initDatas = () => {
     ...pageVO.value
   })
     .then((res) => {
-      tableData.value = res.data.records
+      tableData.value = res.data.records.map((item) => {
+        item.statusSuccess = statusHandler(item.status)
+        return item
+      })
       total.value = res.data.total
     })
     .finally(() => {
@@ -146,9 +161,18 @@ const handleDelete = ({ id }) => {
       console.log("cancel the delete！")
     })
 }
-const auditStatusChange = ({ id, status }) => {
+const statusHandler = (status) => {
+  return status === 3 ? true : false
+}
+const switchState = ref(false)
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
+}
+const auditStatusChange = ({ id, statusSuccess }) => {
+  if (!switchState.value) return
   updateArticleStatus({
-    status,
+    status: statusSuccess ? 3 : 2,
     storyId: id
   }).then((res) => {
     if (res.code === 1) {

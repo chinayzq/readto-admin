@@ -41,11 +41,11 @@ export function deleteArticle(articleId) {
  * @param storyId
  * @returns
  */
-export function updateArticleStatus(params) {
+export function updateArticleStatus(data) {
   return request({
     url: "/story/status",
     method: "put",
-    params
+    data
   })
 }
 

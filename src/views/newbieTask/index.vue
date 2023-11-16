@@ -1,14 +1,22 @@
 <template>
   <div class="newbie-task-component app-container">
+    <div class="search-line">
+      <el-row :gutter="20">
+        <el-col :span="2">
+          <LangSelector @change="langChange" />
+        </el-col>
+      </el-row>
+    </div>
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="content" label="内容" />
-        <el-table-column prop="description" label="描述信息" />
-        <el-table-column prop="prizeCount" label="奖励金币" />
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="name" label="内容" />
+        <el-table-column prop="des" label="描述信息" />
+        <el-table-column prop="amount" label="奖励金币" />
+        <el-table-column prop="status" label="显示/隐藏">
           <template #default="scope">
             <el-switch
+              :before-change="beforeChangeColumn"
               @change="auditStatusChange(scope.row)"
               v-model="scope.row.status"
               :active-value="1"
@@ -30,44 +38,53 @@
 <script setup>
 import { ref } from "vue"
 import ConfigEditDialog from "./components/configEditDialog.vue"
-
+import { getTaskList, taskStatusChange } from "@/api/task"
+import { ElMessage } from "element-plus"
+import LangSelector from "@/components/LangSelector/index.vue"
 const listLoading = ref(false)
-const tableData = ref([
-  {
-    content: "绑定邮箱",
-    description: "绑定邮箱即可获得奖励",
-    prizeCount: 50,
-    status: 1
-  },
-  {
-    content: "绑定Google账号",
-    description: "绑定Google账号即可获得奖励",
-    prizeCount: 50,
-    status: 1
-  },
-  {
-    content: "完善资料",
-    description: "完善资料即可获得奖励",
-    prizeCount: 50,
-    status: 1
-  },
-  {
-    content: "绑定手机号",
-    description: "绑定手机号即可获得奖励",
-    prizeCount: 50,
-    status: 1
-  }
-])
+const tableData = ref([])
+const lang = ref("zh")
 const initDatas = () => {
   listLoading.value = true
-  setTimeout(() => {
-    listLoading.value = false
-  }, 1000)
+  getTaskList({
+    page: 1,
+    pageSize: 20,
+    type: 2,
+    idDes: false,
+    lang: lang.value,
+    orderColumns: "id"
+  })
+    .then((res) => {
+      if (res.code === 1) {
+        tableData.value = res.data.records
+      }
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
 }
-initDatas()
+const langChange = (value) => {
+  lang.value = value
+  initDatas()
+}
 
-const auditStatusChange = ({ status }) => {
-  console.log("status", status)
+const switchState = ref(false)
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
+}
+const auditStatusChange = ({ status, taskId }) => {
+  if (!switchState.value) return
+  taskStatusChange({
+    status,
+    lang: lang.value,
+    taskId
+  }).then((res) => {
+    if (res.code === 1) {
+      ElMessage.success("修改成功！")
+      initDatas()
+    }
+  })
 }
 
 const dialogDatas = ref({
@@ -89,5 +106,8 @@ const dialogClose = (fresh) => {
 
 <style lang="scss" scoped>
 .newbie-task-component {
+  .search-line {
+    margin-bottom: 20px;
+  }
 }
 </style>
