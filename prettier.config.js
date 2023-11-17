@@ -11,7 +11,7 @@ module.exports = {
   /** 换行符的使用 */
   endOfLine: "auto",
   /** 是否采用单引号 */
-  singleQuote: false,
+  singleQuote: true,
   /** 对象或者数组的最后一个元素后面不要加逗号 */
   trailingComma: "none",
   /** 是否加分号 */

@@ -53,9 +53,9 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue"
-import { userGoldOperation } from "@/api/user"
-import { ElMessage } from "element-plus"
+import { computed, ref, watch } from 'vue'
+import { userGoldOperation } from '@/api/user'
+import { ElMessage } from 'element-plus'
 
 const props = defineProps({
   dialogVisible: {
@@ -82,10 +82,10 @@ watch(
   { deep: true }
 )
 
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 const handleClose = (flag) => {
   clearFormHandler()
-  emit("close", flag)
+  emit('close', flag)
 }
 const clearFormHandler = () => {
   userInfo.value.nickeName = null
@@ -96,7 +96,7 @@ const clearFormHandler = () => {
     optDes: null,
     optStatus: 200,
     status: 3,
-    userId: null,
+    userId: null
   }
 }
 const userInfo = ref({
@@ -109,7 +109,7 @@ const goldForm = ref({
   optDes: null,
   optStatus: 200,
   status: 3,
-  userId: null,
+  userId: null
 })
 const submitLoading = ref(false)
 const goldOpeSubmit = () => {
@@ -117,7 +117,7 @@ const goldOpeSubmit = () => {
   userGoldOperation(goldForm.value)
     .then((res) => {
       if (res.code === 1) {
-        ElMessage.success("金币更新成功！")
+        ElMessage.success('金币更新成功！')
         handleClose(true)
       }
     })
