@@ -194,6 +194,54 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: "/payment",
+    component: Layouts,
+    name: "payment",
+    redirect: "/payment/goldFlow",
+    meta: {
+      title: "支付配置",
+      svgIcon: "payment"
+    },
+    children: [
+      {
+        path: "goldFlow",
+        component: () => import("@/views/goldFlow/index.vue"),
+        name: "goldFlow",
+        meta: {
+          title: "金币流水",
+          keepAlive: true
+        }
+      },
+      {
+        path: "cashOut",
+        component: () => import("@/views/cashOut/index.vue"),
+        name: "cashOut",
+        meta: {
+          title: "提现列表",
+          keepAlive: true
+        }
+      },
+      {
+        path: "cashOutConfig",
+        component: () => import("@/views/cashOutConfig/index.vue"),
+        name: "cashOutConfig",
+        meta: {
+          title: "提现配置",
+          keepAlive: true
+        }
+      },
+      {
+        path: "exchangeRate",
+        component: () => import("@/views/exchangeRate/index.vue"),
+        name: "exchangeRate",
+        meta: {
+          title: "汇率设置",
+          keepAlive: true
+        }
+      }
+    ]
   }
   // {
   //   path: "/unocss",
