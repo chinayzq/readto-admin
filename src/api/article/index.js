@@ -99,3 +99,12 @@ export function deleteArticleCatelog(id) {
     method: "delete"
   })
 }
+
+/** 获取分类列表 */
+export function getAllTagList(params) {
+  return request({
+    url: "/tag",
+    method: "get",
+    params
+  })
+}

@@ -59,6 +59,22 @@
                   <el-option v-for="item in userIdOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
+              <el-form-item label="文章标签" prop="tagIds">
+                <el-select
+                  :disabled="currentStatus === 'preview'"
+                  v-model="formData.tagIds"
+                  multiple
+                  placeholder="Select"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in tagOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="48">
@@ -102,7 +118,7 @@ import "@wangeditor/editor/dist/css/style.css" // 引入 css
 import { ref, shallowRef, onBeforeUnmount, watch } from "vue"
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
 import { getVirtuallyUserList } from "@/api/user"
-import { articleUpdate, getArticleDetail } from "@/api/article"
+import { articleUpdate, getArticleDetail, getAllTagList } from "@/api/article"
 import { getToken } from "@/utils/cache/cookies"
 import { ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils"
@@ -122,6 +138,16 @@ const getVirtuaUserList = () => {
   })
 }
 getVirtuaUserList()
+const tagOptions = ref([])
+const getTagList = () => {
+  getAllTagList({
+    page: 1,
+    pageSize: 9999,
+  }).then(res => {
+    console.log(res)
+  })
+}
+getTagList()
 //#endregion
 
 //#region wangEditor config
@@ -172,7 +198,8 @@ const formData = ref({
   totalWords: null,
   author: null,
   comSumCount: null,
-  praise: null
+  praise: null,
+  tagIds: [],
 })
 const formRules = ref({
   name: [
@@ -195,7 +222,7 @@ const submitHandler = () => {
     if (valid) {
       console.log("formData", formData.value)
       const { name, content, userId, storyType } = formData.value
-      const params = { name, content, userId, storyType }
+      const params = { name, content, userId, storyType, tagIds }
       if (props.dataset.datas.id) {
         params.id = props.dataset.datas.id
       }
