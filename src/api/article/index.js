@@ -1,10 +1,10 @@
-import { request } from "@/utils/service"
+import { request } from '@/utils/service'
 
 /** 获取文章列表 */
 export function getArticleList(params) {
   return request({
-    url: "/story/list",
-    method: "get",
+    url: '/story/list',
+    method: 'get',
     params
   })
 }
@@ -19,8 +19,8 @@ export function getArticleList(params) {
  */
 export function articleUpdate(data) {
   return request({
-    url: "/story/save",
-    method: "post",
+    url: '/story/save',
+    method: 'post',
     data
   })
 }
@@ -32,7 +32,7 @@ export function articleUpdate(data) {
 export function deleteArticle(articleId) {
   return request({
     url: `/story/delete/${articleId}`,
-    method: "delete"
+    method: 'delete'
   })
 }
 /**
@@ -43,8 +43,8 @@ export function deleteArticle(articleId) {
  */
 export function updateArticleStatus(data) {
   return request({
-    url: "/story/status",
-    method: "put",
+    url: '/story/status',
+    method: 'put',
     data
   })
 }
@@ -57,15 +57,15 @@ export function updateArticleStatus(data) {
 export function getArticleDetail(storyId) {
   return request({
     url: `/story/view/${storyId}`,
-    method: "get"
+    method: 'get'
   })
 }
 
 /** 获取分类列表 */
 export function getArticleCatelogList(params) {
   return request({
-    url: "/tag/list",
-    method: "get",
+    url: '/tag/list',
+    method: 'get',
     params
   })
 }
@@ -73,8 +73,8 @@ export function getArticleCatelogList(params) {
 // 新增&编辑分类
 export function updateArticleCatelog(data) {
   return request({
-    url: "/tag",
-    method: "post",
+    url: '/tag',
+    method: 'post',
     data
   })
 }
@@ -82,8 +82,8 @@ export function updateArticleCatelog(data) {
 // 修改分类状态
 export function updateArticleCatelogStatus(data) {
   return request({
-    url: "/tag",
-    method: "post",
+    url: '/tag',
+    method: 'post',
     data
   })
 }
@@ -96,15 +96,15 @@ export function updateArticleCatelogStatus(data) {
 export function deleteArticleCatelog(id) {
   return request({
     url: `/tag/${id}`,
-    method: "delete"
+    method: 'delete'
   })
 }
 
 /** 获取分类列表 */
 export function getAllTagList(params) {
   return request({
-    url: "/tag",
-    method: "get",
+    url: '/tag',
+    method: 'get',
     params
   })
 }

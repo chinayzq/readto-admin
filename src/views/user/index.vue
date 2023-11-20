@@ -62,12 +62,12 @@
         </el-table-column>
         <el-table-column prop="age" label="年龄">
           <template #default="scope">
-            <span>{{ scope.row.age || "-" }}</span>
+            <span>{{ scope.row.age || '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="bindPhone" label="联系方式">
           <template #default="scope">
-            <span>{{ scope.row.bindPhone || "-" }}</span>
+            <span>{{ scope.row.bindPhone || '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="subCnt" label="下级">
@@ -120,27 +120,27 @@
 </template>
 
 <script setup>
-import { Search, CirclePlus } from "@element-plus/icons-vue"
-import { ref } from "vue"
-import UserAddDialog from "./components/userAddDialog.vue"
-import UserDetailDialog from "./components/userDetailDialog.vue"
-import GoldOperaionDialog from "./components/goldOperationDialog.vue"
-import { getUserList, changeUserStatus } from "@/api/user"
-import { formatDateTime } from "@/utils"
-import { ElMessageBox, ElMessage } from "element-plus"
+import { Search, CirclePlus } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import UserAddDialog from './components/userAddDialog.vue'
+import UserDetailDialog from './components/userDetailDialog.vue'
+import GoldOperaionDialog from './components/goldOperationDialog.vue'
+import { getUserList, changeUserStatus } from '@/api/user'
+import { formatDateTime } from '@/utils'
+import { ElMessage } from 'element-plus'
 
 //#region 所有options
 const sexOptions = ref([
   {
-    label: "全部",
-    value: ""
+    label: '全部',
+    value: ''
   },
   {
-    label: "男",
+    label: '男',
     value: 1
   },
   {
-    label: "女",
+    label: '女',
     value: 2
   }
 ])
@@ -151,41 +151,41 @@ const ageRangeMap = ref({
   70: [1970, 1979],
   80: [1980, 1989],
   90: [1990, 1999],
-  "00": [2000, 2009],
+  '00': [2000, 2009],
   10: [2010, 2019]
 })
 const ageGroupOptions = ref([
   {
-    label: "全部",
+    label: '全部',
     value: null
   },
   {
-    label: "50后",
-    value: "50"
+    label: '50后',
+    value: '50'
   },
   {
-    label: "60后",
-    value: "60"
+    label: '60后',
+    value: '60'
   },
   {
-    label: "70后",
-    value: "70"
+    label: '70后',
+    value: '70'
   },
   {
-    label: "80后",
-    value: "80"
+    label: '80后',
+    value: '80'
   },
   {
-    label: "90后",
-    value: "90"
+    label: '90后',
+    value: '90'
   },
   {
-    label: "00后",
-    value: "00"
+    label: '00后',
+    value: '00'
   },
   {
-    label: "10后",
-    value: "10"
+    label: '10后',
+    value: '10'
   }
 ])
 // const levelOptions = ref([
@@ -219,20 +219,20 @@ const ageGroupOptions = ref([
 //   }
 // ])
 const stateOptions = ref([
-  { label: "正常", value: 0 },
-  { label: "封禁", value: 1 }
+  { label: '正常', value: 0 },
+  { label: '封禁', value: 1 }
 ])
 //#endregion
 
 //#region 查询
 const activeLabelMap = ref({
-  0: "否",
-  1: "是"
+  0: '否',
+  1: '是'
 })
 const genderMap = ref({
-  1: "男",
-  2: "女",
-  0: "未知"
+  1: '男',
+  2: '女',
+  0: '未知'
 })
 const total = ref(0)
 const searchForm = ref({
@@ -289,7 +289,7 @@ const userStatusChange = ({ userStatus, id }) => {
     id
   }).then((res) => {
     if (res.code === 1) {
-      ElMessage.success("状态更新成功！")
+      ElMessage.success('状态更新成功！')
     }
   })
 }
@@ -298,7 +298,7 @@ const userStatusChange = ({ userStatus, id }) => {
 // #region 新增
 const userDialogVisible = ref(false)
 const addNewUser = () => {
-  console.log("1111")
+  console.log('1111')
   userDialogVisible.value = true
 }
 const userAddDialogClose = (flag) => {

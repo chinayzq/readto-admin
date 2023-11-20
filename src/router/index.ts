@@ -1,243 +1,243 @@
-import { type RouteRecordRaw, createRouter } from "vue-router"
-import { history, flatMultiLevelRoutes } from "./helper"
-import routeSettings from "@/config/route"
+import { type RouteRecordRaw, createRouter } from 'vue-router'
+import { history, flatMultiLevelRoutes } from './helper'
+import routeSettings from '@/config/route'
 
-const Layouts = () => import("@/layouts/index.vue")
+const Layouts = () => import('@/layouts/index.vue')
 /**
  * 常驻路由
  * 除了 redirect/403/404/login 等隐藏页面，其他页面建议设置 Name 属性
  */
 export const constantRoutes: RouteRecordRaw[] = [
   {
-    path: "/redirect",
+    path: '/redirect',
     component: Layouts,
     meta: {
       hidden: true
     },
     children: [
       {
-        path: "/redirect/:path(.*)",
-        component: () => import("@/views/redirect/index.vue")
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index.vue')
       }
     ]
   },
   {
-    path: "/403",
-    component: () => import("@/views/error-page/403.vue"),
+    path: '/403',
+    component: () => import('@/views/error-page/403.vue'),
     meta: {
       hidden: true
     }
   },
   {
-    path: "/404",
-    component: () => import("@/views/error-page/404.vue"),
+    path: '/404',
+    component: () => import('@/views/error-page/404.vue'),
     meta: {
       hidden: true
     },
-    alias: "/:pathMatch(.*)*"
+    alias: '/:pathMatch(.*)*'
   },
   {
-    path: "/login",
-    component: () => import("@/views/login/index.vue"),
+    path: '/login',
+    component: () => import('@/views/login/index.vue'),
     meta: {
       hidden: true
     }
   },
   {
-    path: "/userManagement",
+    path: '/userManagement',
     component: Layouts,
-    name: "userManagement",
-    redirect: "/userManagement/user",
+    name: 'userManagement',
+    redirect: '/userManagement/user',
     meta: {
-      title: "用户管理",
-      svgIcon: "user"
+      title: '用户管理',
+      svgIcon: 'user'
     },
     children: [
       {
-        path: "user",
-        component: () => import("@/views/user/index.vue"),
-        name: "user",
+        path: 'user',
+        component: () => import('@/views/user/index.vue'),
+        name: 'user',
         meta: {
-          title: "用户管理",
+          title: '用户管理',
           keepAlive: true
         }
       },
       {
-        path: "prohibitedUsers",
-        component: () => import("@/views/prohibitedUsers/index.vue"),
-        name: "prohibitedUsers",
+        path: 'prohibitedUsers',
+        component: () => import('@/views/prohibitedUsers/index.vue'),
+        name: 'prohibitedUsers',
         meta: {
-          title: "IP封禁与黑名单",
+          title: 'IP封禁与黑名单',
           keepAlive: true
         }
       }
     ]
   },
   {
-    path: "/",
+    path: '/',
     component: Layouts,
-    redirect: "/commentManagement",
+    redirect: '/commentManagement',
     children: [
       {
-        path: "commentManagement",
-        component: () => import("@/views/commentManagement/index.vue"),
-        name: "commentManagement",
+        path: 'commentManagement',
+        component: () => import('@/views/commentManagement/index.vue'),
+        name: 'commentManagement',
         meta: {
-          title: "评论管理",
-          svgIcon: "comment",
+          title: '评论管理',
+          svgIcon: 'comment',
           affix: true
         }
       }
     ]
   },
   {
-    path: "/article",
+    path: '/article',
     component: Layouts,
-    name: "article",
-    redirect: "/article/articleManagement",
+    name: 'article',
+    redirect: '/article/articleManagement',
     meta: {
-      title: "内容管理",
-      svgIcon: "article"
+      title: '内容管理',
+      svgIcon: 'article'
     },
     children: [
       {
-        path: "articleManagement",
-        component: () => import("@/views/articleManagement/index.vue"),
-        name: "articleManagement",
+        path: 'articleManagement',
+        component: () => import('@/views/articleManagement/index.vue'),
+        name: 'articleManagement',
         meta: {
-          title: "文章管理",
+          title: '文章管理',
           keepAlive: true
         }
       },
       {
-        path: "friendlyArticle",
-        component: () => import("@/views/friendlyArticle/index.vue"),
-        name: "friendlyArticle",
+        path: 'friendlyArticle',
+        component: () => import('@/views/friendlyArticle/index.vue'),
+        name: 'friendlyArticle',
         meta: {
-          title: "交友内容管理",
+          title: '交友内容管理',
           keepAlive: true
         }
       },
       {
-        path: "articleCatelog",
-        component: () => import("@/views/articleCatelog/index.vue"),
-        name: "articleCatelog",
+        path: 'articleCatelog',
+        component: () => import('@/views/articleCatelog/index.vue'),
+        name: 'articleCatelog',
         meta: {
-          title: "分类管理",
+          title: '分类管理',
           keepAlive: true
         }
       }
     ]
   },
   {
-    path: "/task",
+    path: '/task',
     component: Layouts,
-    name: "task",
-    redirect: "/task/newbieTask",
+    name: 'task',
+    redirect: '/task/newbieTask',
     meta: {
-      title: "奖励配置",
-      svgIcon: "prize"
+      title: '奖励配置',
+      svgIcon: 'prize'
     },
     children: [
       {
-        path: "newbieTask",
-        component: () => import("@/views/newbieTask/index.vue"),
-        name: "newbieTask",
+        path: 'newbieTask',
+        component: () => import('@/views/newbieTask/index.vue'),
+        name: 'newbieTask',
         meta: {
-          title: "新手任务",
+          title: '新手任务',
           keepAlive: true
         }
       },
       {
-        path: "dailyTasks",
-        component: () => import("@/views/dailyTasks/index.vue"),
-        name: "dailyTasks",
+        path: 'dailyTasks',
+        component: () => import('@/views/dailyTasks/index.vue'),
+        name: 'dailyTasks',
         meta: {
-          title: "日常任务",
+          title: '日常任务',
           keepAlive: true
         }
       },
       {
-        path: "signInConfig",
-        component: () => import("@/views/signInConfig/index.vue"),
-        name: "signInConfig",
+        path: 'signInConfig',
+        component: () => import('@/views/signInConfig/index.vue'),
+        name: 'signInConfig',
         meta: {
-          title: "签到配置",
+          title: '签到配置',
           keepAlive: true
         }
       },
       {
-        path: "invitationConfig",
-        component: () => import("@/views/invitationConfig/index.vue"),
-        name: "invitationConfig",
+        path: 'invitationConfig',
+        component: () => import('@/views/invitationConfig/index.vue'),
+        name: 'invitationConfig',
         meta: {
-          title: "邀请配置",
+          title: '邀请配置',
           keepAlive: true
         }
       },
       {
-        path: "activationConfig",
-        component: () => import("@/views/activationConfig/index.vue"),
-        name: "activationConfig",
+        path: 'activationConfig',
+        component: () => import('@/views/activationConfig/index.vue'),
+        name: 'activationConfig',
         meta: {
-          title: "激活配置",
+          title: '激活配置',
           keepAlive: true
         }
       },
       {
-        path: "readTimeRewardSettings",
-        component: () => import("@/views/readTimeRewardSettings/index.vue"),
-        name: "readTimeRewardSettings",
+        path: 'readTimeRewardSettings',
+        component: () => import('@/views/readTimeRewardSettings/index.vue'),
+        name: 'readTimeRewardSettings',
         meta: {
-          title: "阅读计时奖励设置",
+          title: '阅读计时奖励设置',
           keepAlive: true
         }
       }
     ]
   },
   {
-    path: "/payment",
+    path: '/payment',
     component: Layouts,
-    name: "payment",
-    redirect: "/payment/goldFlow",
+    name: 'payment',
+    redirect: '/payment/goldFlow',
     meta: {
-      title: "支付配置",
-      svgIcon: "payment"
+      title: '支付配置',
+      svgIcon: 'payment'
     },
     children: [
       {
-        path: "goldFlow",
-        component: () => import("@/views/goldFlow/index.vue"),
-        name: "goldFlow",
+        path: 'goldFlow',
+        component: () => import('@/views/goldFlow/index.vue'),
+        name: 'goldFlow',
         meta: {
-          title: "金币流水",
+          title: '金币流水',
           keepAlive: true
         }
       },
       {
-        path: "cashOut",
-        component: () => import("@/views/cashOut/index.vue"),
-        name: "cashOut",
+        path: 'cashOut',
+        component: () => import('@/views/cashOut/index.vue'),
+        name: 'cashOut',
         meta: {
-          title: "提现列表",
+          title: '提现列表',
           keepAlive: true
         }
       },
       {
-        path: "cashOutConfig",
-        component: () => import("@/views/cashOutConfig/index.vue"),
-        name: "cashOutConfig",
+        path: 'cashOutConfig',
+        component: () => import('@/views/cashOutConfig/index.vue'),
+        name: 'cashOutConfig',
         meta: {
-          title: "提现配置",
+          title: '提现配置',
           keepAlive: true
         }
       },
       {
-        path: "exchangeRate",
-        component: () => import("@/views/exchangeRate/index.vue"),
-        name: "exchangeRate",
+        path: 'exchangeRate',
+        component: () => import('@/views/exchangeRate/index.vue'),
+        name: 'exchangeRate',
         meta: {
-          title: "汇率设置",
+          title: '汇率设置',
           keepAlive: true
         }
       }
@@ -470,9 +470,9 @@ export const asyncRoutes: RouteRecordRaw[] = [
   //   ]
   // },
   {
-    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
-    redirect: "/404",
-    name: "ErrorPage",
+    path: '/:pathMatch(.*)*', // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
+    redirect: '/404',
+    name: 'ErrorPage',
     meta: {
       hidden: true
     }
