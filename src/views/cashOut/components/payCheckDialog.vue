@@ -57,7 +57,7 @@ const submitHandler = () => {
   payCheck({
     ...formData.value,
     ...{
-      goldIds: props?.dataset?.datas?.goldId
+      id: props?.dataset?.datas?.id
     }
   })
     .then((res) => {
