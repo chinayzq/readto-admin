@@ -17,13 +17,15 @@
             style="width: 100%"
             v-model="searchForm.date"
             type="daterange"
+            value-format="YYYY-MM-DD"
             range-separator="-"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            @change="initDatas"
           />
         </el-col>
         <el-col :span="4">
-          <el-input v-model="searchForm.key" placeholder="搜索用户" />
+          <el-input v-model="searchForm.key" placeholder="搜索用户" clearable @input="initDatas" />
         </el-col>
         <el-col :span="2">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
@@ -39,7 +41,11 @@
             <img class="list-user-icon" v-else src="@/assets/user/user_default_icon.png" alt="" />
           </template>
         </el-table-column>
-        <el-table-column prop="nickeName" label="昵称" />
+        <el-table-column prop="nickeName" label="昵称">
+          <template #default="scope">
+            <span class="link-button" @click="linkButtonClick(scope.row.nickeName)">{{ scope.row.nickeName }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="calcType" label="属性">
           <template #default="scope">
             <span>{{ calcTypeMaps[scope.row.calcType] }}</span>
@@ -122,7 +128,8 @@ const taskTypeMaps = ref({
 const searchForm = ref({
   calcType: null,
   taskType: null,
-  date: []
+  date: [],
+  key: null
 })
 const pageVO = ref({
   page: 1,
@@ -133,7 +140,16 @@ const tableData = ref([])
 const tableLoading = ref(false)
 const initDatas = () => {
   tableLoading.value = true
-  getGoldFlowList(pageVO.value)
+  getGoldFlowList({
+    ...pageVO.value,
+    ...{
+      calcType: searchForm.value.calcType,
+      taskType: searchForm.value.taskType,
+      key: searchForm.value.key,
+      beginTime: searchForm.value?.date?.[0],
+      endTime: searchForm.value?.date?.[1]
+    }
+  })
     .then((res) => {
       tableData.value = res.data.records
       total.value = res.data.total
@@ -143,6 +159,15 @@ const initDatas = () => {
     })
 }
 initDatas()
+
+const linkButtonClick = (key) => {
+  searchForm.value.key = key
+  initDatas()
+}
+const handleCurrentChange = (page) => {
+  pageVO.value.page = page
+  initDatas()
+}
 </script>
 
 <style scoped lang="scss">
@@ -158,6 +183,10 @@ initDatas()
     display: flex;
     justify-content: center;
     margin: 15px 0;
+  }
+  .link-button {
+    color: #409eff;
+    cursor: pointer;
   }
 }
 </style>

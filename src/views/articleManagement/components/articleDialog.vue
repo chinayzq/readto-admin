@@ -1,7 +1,7 @@
 <template>
   <div class="article-dialog-component">
     <el-dialog
-      v-model="props.dialogVisible"
+      v-model="dialogShow"
       :close-on-click-modal="false"
       :title="props?.dataset?.title"
       width="1000"
@@ -22,17 +22,17 @@
             <template v-if="currentStatus !== 'add'">
               <el-col :span="12">
                 <el-form-item label="发布时间" prop="publish">
-                  {{ formData.publish ? formatDateTime(formData.publish) : "-" }}
+                  {{ formData.publish ? formatDateTime(formData.publish) : '-' }}
                 </el-form-item>
               </el-col>
               <el-col :span="12"
                 ><el-form-item label="内容字数" prop="totalWords">
-                  {{ formData.totalWords || "-" }}
+                  {{ formData.totalWords || '-' }}
                 </el-form-item></el-col
               >
               <el-col :span="12"
                 ><el-form-item label="作者" prop="author">
-                  {{ formData.author || "-" }}
+                  {{ formData.author || '-' }}
                 </el-form-item></el-col
               >
               <el-col :span="12"
@@ -67,12 +67,7 @@
                   placeholder="Select"
                   style="width: 100%"
                 >
-                  <el-option
-                    v-for="item in tagOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
+                  <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -114,14 +109,14 @@
 </template>
 
 <script setup>
-import "@wangeditor/editor/dist/css/style.css" // 引入 css
-import { ref, shallowRef, onBeforeUnmount, watch } from "vue"
-import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
-import { getVirtuallyUserList } from "@/api/user"
-import { articleUpdate, getArticleDetail, getAllTagList } from "@/api/article"
-import { getToken } from "@/utils/cache/cookies"
-import { ElMessage } from "element-plus"
-import { formatDateTime } from "@/utils"
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
+import { ref, shallowRef, onBeforeUnmount, watch, computed } from 'vue'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { getVirtuallyUserList } from '@/api/user'
+import { articleUpdate, getArticleDetail, getAllTagList } from '@/api/article'
+import { getToken } from '@/utils/cache/cookies'
+import { ElMessage } from 'element-plus'
+import { formatDateTime } from '@/utils'
 
 //#region 虚拟用户列表
 const userIdOptions = ref([])
@@ -143,8 +138,15 @@ const getTagList = () => {
   getAllTagList({
     page: 1,
     pageSize: 9999,
-  }).then(res => {
+    lang: 'zh'
+  }).then((res) => {
     console.log(res)
+    tagOptions.value = res.data.records.map((item) => {
+      return {
+        value: item.id,
+        label: item.name
+      }
+    })
   })
 }
 getTagList()
@@ -154,11 +156,11 @@ getTagList()
 const editorRef = shallowRef()
 const toolbarConfig = {}
 const editorConfig = {
-  placeholder: "请输入内容...",
+  placeholder: '请输入内容...',
   MENU_CONF: {
     uploadImage: {
-      fieldName: "file",
-      server: "/admin/api/story/file/upload",
+      fieldName: 'file',
+      server: '/admin/api/story/file/upload',
       headers: {
         Authorization: getToken()
       },
@@ -176,20 +178,20 @@ onBeforeUnmount(() => {
 })
 const handleCreated = (editor) => {
   editorRef.value = editor // 记录 editor 实例，重要！
-  setEditorDisableStatus(currentStatus.value === "preview")
+  setEditorDisableStatus(currentStatus.value === 'preview')
 }
 //#endregion
 
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 const handleClose = (flag) => {
-  emit("close", flag)
+  emit('close', flag)
 }
 
 //#region 保存、更新
 const articleFormIns = ref(null)
 const formData = ref({
   name: null,
-  content: "",
+  content: '',
   userId: null,
   storyType: 1,
   id: null,
@@ -199,36 +201,36 @@ const formData = ref({
   author: null,
   comSumCount: null,
   praise: null,
-  tagIds: [],
+  tagIds: []
 })
 const formRules = ref({
   name: [
     {
       required: true,
-      message: "请输入文章标题!",
-      trigger: "blur"
+      message: '请输入文章标题!',
+      trigger: 'blur'
     }
   ],
   userId: [
     {
       required: true,
-      message: "请选择发布人!",
-      trigger: "blur"
+      message: '请选择发布人!',
+      trigger: 'blur'
     }
   ]
 })
 const submitHandler = () => {
   articleFormIns.value.validate((valid) => {
     if (valid) {
-      console.log("formData", formData.value)
-      const { name, content, userId, storyType } = formData.value
+      console.log('formData', formData.value)
+      const { name, content, userId, storyType, tagIds } = formData.value
       const params = { name, content, userId, storyType, tagIds }
       if (props.dataset.datas.id) {
         params.id = props.dataset.datas.id
       }
       articleUpdate(params).then((res) => {
         if (res.code === 1) {
-          ElMessage.success("保存文章成功！")
+          ElMessage.success('保存文章成功！')
           handleClose(true)
         }
       })
@@ -239,7 +241,7 @@ const submitHandler = () => {
 
 //#region display datas
 const dialogLoading = ref(false)
-const currentStatus = ref("add")
+const currentStatus = ref('add')
 const props = defineProps({
   dialogVisible: {
     type: Boolean,
@@ -254,12 +256,13 @@ const props = defineProps({
     }
   }
 })
+const dialogShow = computed(() => props.dialogVisible)
 watch(
   () => props.dataset,
   (datas) => {
-    console.log("datas", datas)
+    console.log('datas', datas)
     currentStatus.value = datas.status
-    setEditorDisableStatus(currentStatus.value === "preview")
+    setEditorDisableStatus(currentStatus.value === 'preview')
     if (datas.datas.id) {
       displayArtilceDetail(datas.datas.id)
     } else {
@@ -283,7 +286,7 @@ const displayArtilceDetail = (id) => {
 const resetFormData = () => {
   formData.value = {
     name: null,
-    content: "",
+    content: '',
     userId: null,
     storyType: 1,
     id: null,
@@ -305,7 +308,7 @@ const setEditorDisableStatus = (isDisable) => {
   }
 }
 const changeCurrentStatus = () => {
-  currentStatus.value = "edit"
+  currentStatus.value = 'edit'
   setEditorDisableStatus(false)
 }
 //#endregion

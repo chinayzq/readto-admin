@@ -40,9 +40,9 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue"
-import { updateArticleCatelog } from "@/api/article"
-import { ElMessage } from "element-plus"
+import { computed, ref, watch } from 'vue'
+import { updateArticleCatelog } from '@/api/article'
+import { ElMessage } from 'element-plus'
 const props = defineProps({
   dataset: {
     type: Object,
@@ -99,7 +99,7 @@ const submitHandler = () => {
   updateArticleCatelog(params)
     .then((res) => {
       if (res.code === 1) {
-        ElMessage.success("保存成功！")
+        ElMessage.success('保存成功！')
         handleClose(true)
       }
     })
@@ -119,10 +119,10 @@ const getItemIdFromSource = (key) => {
   }
 }
 
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 const handleClose = (flag) => {
   resetForm()
-  emit("close", flag)
+  emit('close', flag)
 }
 const resetForm = () => {
   formData.value = {
