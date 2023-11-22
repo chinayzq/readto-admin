@@ -35,3 +35,12 @@ export function getPayDetailById(params) {
     params
   })
 }
+
+/** 获取汇率列表 */
+export function getRateList(params) {
+  return request({
+    url: '/rate/list',
+    method: 'get',
+    params
+  })
+}

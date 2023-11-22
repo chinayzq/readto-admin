@@ -74,10 +74,10 @@
 </template>
 
 <script setup>
-import { formatDateTime } from "@/utils"
-import { computed, ref, watch } from "vue"
-import { getCommentSecondList, deleteSecondComment, secondCommentStatus } from "@/api/comment"
-import { ElMessageBox, ElMessage } from "element-plus"
+import { formatDateTime } from '@/utils'
+import { computed, ref, watch } from 'vue'
+import { getCommentSecondList, deleteSecondComment, secondCommentStatus } from '@/api/comment'
+import { ElMessageBox, ElMessage } from 'element-plus'
 const datas = computed(() => props.dataset)
 const props = defineProps({
   dataset: {
@@ -87,9 +87,9 @@ const props = defineProps({
     }
   }
 })
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 const handleClose = () => {
-  emit("close")
+  emit('close')
 }
 
 //#region 查询
@@ -115,11 +115,11 @@ const pageVO = ref({
   size: 10
 })
 const replyDetails = ref({
-  name: "这是一个文章标题这是一个文章标题",
-  userNickeName: "刘德华",
+  name: '这是一个文章标题这是一个文章标题',
+  userNickeName: '刘德华',
   createTime: new Date().getTime(),
   subComCount: 888,
-  commentsContent: "这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题"
+  commentsContent: '这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题这是一个文章标题'
 })
 const displayCommentDetails = (datas) => {
   replyDetails.value = datas
@@ -157,24 +157,24 @@ const auditStatusChange = ({ id, status }) => {
     id
   }).then((res) => {
     if (res.code === 1) {
-      ElMessage.success("状态更新成功！")
+      ElMessage.success('状态更新成功！')
     }
   })
 }
 const handleDelete = ({ id }) => {
-  ElMessageBox.confirm("确定删除该评论?", "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
+  ElMessageBox.confirm('确定删除该评论?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
   })
     .then(() => {
       deleteSecondComment({ id }).then(() => {
-        ElMessage.success("删除成功！")
+        ElMessage.success('删除成功！')
         initDatas()
       })
     })
     .catch(() => {
-      console.log("cancel the delete！")
+      console.log('cancel the delete！')
     })
 }
 //#endregion
