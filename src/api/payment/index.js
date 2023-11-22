@@ -44,3 +44,39 @@ export function getRateList(params) {
     params
   })
 }
+
+/** 获取金币兑换美元汇率 */
+export function getUsdRate(params) {
+  return request({
+    url: '/system/usd',
+    method: 'get',
+    params
+  })
+}
+
+/** 设置金币兑换美元汇率 */
+export function setUsdRate(params) {
+  return request({
+    url: '/system/usd',
+    method: 'post',
+    params
+  })
+}
+
+/** 获取金币兑换列表 */
+export function getMoneyChargeRateList(params) {
+  return request({
+    url: '/system/rate',
+    method: 'get',
+    params
+  })
+}
+
+/** 设置金币兑换各币种汇率 */
+export function setMoneyChargeRate(params) {
+  return request({
+    url: '/system/rate',
+    method: 'post',
+    params
+  })
+}
