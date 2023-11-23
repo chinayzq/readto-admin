@@ -1,8 +1,8 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios"
-import { useUserStoreHook } from "@/store/modules/user"
-import { ElMessage } from "element-plus"
-import { get, merge } from "lodash-es"
-import { getToken } from "./cache/cookies"
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
+import { useUserStoreHook } from '@/store/modules/user'
+import { ElMessage } from 'element-plus'
+import { get, merge } from 'lodash-es'
+import { getToken } from './cache/cookies'
 
 /** 退出登录并强制刷新页面（会重定向到登录页） */
 function logout() {
@@ -23,31 +23,31 @@ function createService() {
   // 响应拦截（可根据具体业务作出相应的调整）
   service.interceptors.response.use(
     (response) => {
-      console.log("response", response)
+      console.log('response', response)
       // apiData 是 api 返回的数据
       const apiData = response.data
       // 二进制数据则直接返回
       const responseType = response.request?.responseType
-      if (responseType === "blob" || responseType === "arraybuffer") return apiData
+      if (responseType === 'blob' || responseType === 'arraybuffer') return apiData
       // 这个 code 是和后端约定的业务 code
       const code = apiData.code
       // 如果没有 code, 代表这不是项目后端开发的 api
       if (code === undefined) {
-        ElMessage.error("非本系统的接口")
-        return Promise.reject(new Error("非本系统的接口"))
+        ElMessage.error('非本系统的接口')
+        return Promise.reject(new Error('非本系统的接口'))
       }
       if (code > 0) {
         // 本系统采用 code === 1 来表示没有业务错误
         return apiData
-      } else if (code === -104) {
-        ElMessage.error("登录失效，请重新登录！")
+      } else if ([-104, -101].includes(code)) {
+        ElMessage.error('登录失效，请重新登录！')
         setTimeout(() => {
           logout()
         }, 2000)
       } else {
         // 不是正确的 code
-        ElMessage.error(apiData.msg || "Error")
-        return Promise.reject(new Error("Error"))
+        ElMessage.error(apiData.msg || 'Error')
+        return Promise.reject(new Error('Error'))
       }
       // switch (code) {
       //   case 1:
@@ -64,41 +64,41 @@ function createService() {
     },
     (error) => {
       // status 是 HTTP 状态码
-      const status = get(error, "response.status")
+      const status = get(error, 'response.status')
       switch (status) {
         case 400:
-          error.message = "请求错误"
+          error.message = '请求错误'
           break
         case 401:
           // Token 过期时
           logout()
           break
         case 403:
-          error.message = "拒绝访问"
+          error.message = '拒绝访问'
           break
         case 404:
-          error.message = "请求地址出错"
+          error.message = '请求地址出错'
           break
         case 408:
-          error.message = "请求超时"
+          error.message = '请求超时'
           break
         case 500:
-          error.message = "服务器内部错误"
+          error.message = '服务器内部错误'
           break
         case 501:
-          error.message = "服务未实现"
+          error.message = '服务未实现'
           break
         case 502:
-          error.message = "网关错误"
+          error.message = '网关错误'
           break
         case 503:
-          error.message = "服务不可用"
+          error.message = '服务不可用'
           break
         case 504:
-          error.message = "网关超时"
+          error.message = '网关超时'
           break
         case 505:
-          error.message = "HTTP 版本不受支持"
+          error.message = 'HTTP 版本不受支持'
           break
         default:
           break
@@ -118,7 +118,7 @@ function createRequest(service: AxiosInstance) {
       headers: {
         // 携带 Token
         Authorization: token || undefined,
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
       timeout: 60000,
       baseURL: import.meta.env.VITE_BASE_API,

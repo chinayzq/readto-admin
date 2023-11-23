@@ -7,7 +7,7 @@
       </span>
       <span> 金币 </span>
       <el-button type="primary" style="margin-left: 15px" @click="openDialog('USD', dollarGoldMount)">更新</el-button>
-      <el-button>更新日志</el-button>
+      <!-- <el-button>更新日志</el-button> -->
     </div>
     <el-table :data="tableData" v-loading="tableLoading">
       <el-table-column type="index" label="序号" width="60" />

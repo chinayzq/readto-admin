@@ -1,5 +1,6 @@
 <template>
   <div class="phone-charge-page">
+    <LangSelector @change="langChange" style="margin-bottom: 15px" />
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
@@ -26,21 +27,69 @@
         </el-table-column>
       </el-table>
     </div>
+    <div class="pagination-container">
+      <el-pagination
+        v-model:current-page="pageVO.page"
+        background
+        layout="total, prev, pager, next"
+        :total="total"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { getRateList } from '@/api/payment'
+import LangSelector from '@/components/LangSelector/index.vue'
 
-const tableData = ref([
-  {
-    level: 30,
-    amount: 1000000,
-    count: '1次',
-    needVerify: '是',
-    status: 1
-  }
-])
+const tableData = ref([])
+const lang = ref('zh')
+const listLoading = ref(false)
+const pageVO = ref({
+  page: 1,
+  pageSize: 10
+})
+const total = ref(0)
+const initDatas = () => {
+  listLoading.value = true
+  getRateList({
+    ...{
+      lang: lang.value,
+      accountType: 3,
+      orderColumns: 'level',
+      isDes: true
+    },
+    ...pageVO.value
+  })
+    .then((res) => {
+      console.log(res)
+      if (res.code === 1) {
+        tableData.value = res.data.records
+        total.value = res.data.total
+      }
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
+}
+const handleCurrentChange = (page) => {
+  pageVO.value.page = page
+  initDatas()
+}
+const langChange = (value) => {
+  lang.value = value
+  initDatas()
+}
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.phone-charge-page {
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+  }
+}
+</style>

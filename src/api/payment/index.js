@@ -45,6 +45,15 @@ export function getRateList(params) {
   })
 }
 
+/** 修改汇率状态 */
+export function updateRateStatus(params) {
+  return request({
+    url: '/rate/status',
+    method: 'post',
+    params
+  })
+}
+
 /** 获取金币兑换美元汇率 */
 export function getUsdRate(params) {
   return request({
