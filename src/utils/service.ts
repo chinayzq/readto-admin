@@ -39,7 +39,7 @@ function createService() {
       if (code > 0) {
         // 本系统采用 code === 1 来表示没有业务错误
         return apiData
-      } else if ([-104, -101].includes(code)) {
+      } else if ([-104, -103, -102, -101].includes(code)) {
         ElMessage.error('登录失效，请重新登录！')
         setTimeout(() => {
           logout()

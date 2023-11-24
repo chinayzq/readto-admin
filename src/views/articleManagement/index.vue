@@ -105,11 +105,15 @@ const verifyOption = ref([
   },
   {
     label: '审核通过',
-    value: 2
+    value: 3
   },
   {
-    label: '未审核',
+    label: '审核中',
     value: 1
+  },
+  {
+    label: '审核未通过',
+    value: 2
   }
 ])
 const initDatas = () => {
