@@ -319,6 +319,7 @@ const changeCurrentStatus = () => {
   .article-detail {
     .editor-container {
       border: 1px solid #dcdfe6;
+      width: 100%;
     }
   }
   .button-container {

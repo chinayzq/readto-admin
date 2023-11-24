@@ -74,19 +74,19 @@
 </template>
 
 <script setup>
-import { Search } from "@element-plus/icons-vue"
-import { ref } from "vue"
-import { ElMessageBox, ElMessage } from "element-plus"
-import { getArticleList, deleteArticle, updateArticleStatus } from "@/api/article"
-import { formatDateTime } from "@/utils"
-import ArticleDialog from "../articleManagement/components/articleDialog.vue"
+import { Search } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { getArticleList, deleteArticle, updateArticleStatus } from '@/api/article'
+import { formatDateTime } from '@/utils'
+import ArticleDialog from '../articleManagement/components/articleDialog.vue'
 //#region 查询
 // status -0:草稿 1: 审核中，2: 审核未通过, 3 审核通过
 const statusMap = ref({
-  0: "草稿",
-  1: "审核中",
-  2: "审核未通过",
-  3: "审核通过"
+  0: '草稿',
+  1: '审核中',
+  2: '审核未通过',
+  3: '审核通过'
 })
 const keyword = ref(null)
 const tableData = ref([])
@@ -99,16 +99,20 @@ const pageVO = ref({
 const total = ref(0)
 const verifyOption = ref([
   {
-    label: "全部",
-    value: ""
+    label: '全部',
+    value: ''
   },
   {
-    label: "审核通过",
-    value: 2
+    label: '审核通过',
+    value: 3
   },
   {
-    label: "未审核",
+    label: '审核中',
     value: 1
+  },
+  {
+    label: '审核未通过',
+    value: 2
   }
 ])
 const initDatas = () => {
@@ -116,9 +120,9 @@ const initDatas = () => {
   getArticleList({
     ...{
       storyType: 2,
-      keyword: keyword.value,
+      key: keyword.value,
       status: status.value,
-      orderColumns: ["publish"]
+      orderColumns: ['publish']
     },
     ...pageVO.value
   })
@@ -146,19 +150,19 @@ const handleCurrentChange = (page) => {
 
 //#region 删除、修改状态
 const handleDelete = ({ id }) => {
-  ElMessageBox.confirm("确定删除该文章?", "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
+  ElMessageBox.confirm('确定删除该文章?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
   })
     .then(() => {
       deleteArticle(id).then(() => {
-        ElMessage.success("删除成功！")
+        ElMessage.success('删除成功！')
         initDatas()
       })
     })
     .catch(() => {
-      console.log("cancel the delete！")
+      console.log('cancel the delete！')
     })
 }
 const statusHandler = (status) => {
@@ -176,7 +180,7 @@ const auditStatusChange = ({ id, statusSuccess }) => {
     storyId: id
   }).then((res) => {
     if (res.code === 1) {
-      ElMessage.success("状态更新成功！")
+      ElMessage.success('状态更新成功！')
     }
   })
 }
@@ -185,19 +189,19 @@ const auditStatusChange = ({ id, statusSuccess }) => {
 //#region 新增、编辑、预览弹框
 const dialogVisible = ref(false)
 const dialogData = ref({
-  title: "新增文章",
-  status: "add", // 新增 - add, 预览 - preview, 编辑 - edit
+  title: '新增文章',
+  status: 'add', // 新增 - add, 预览 - preview, 编辑 - edit
   datas: {}
 })
 const articleEditOpen = (item) => {
-  dialogData.value.title = "编辑文章"
-  dialogData.value.status = "edit"
+  dialogData.value.title = '编辑文章'
+  dialogData.value.status = 'edit'
   dialogData.value.datas = item
   dialogVisible.value = true
 }
 const articlePreviewOpen = (item) => {
-  dialogData.value.title = "文章详情"
-  dialogData.value.status = "preview"
+  dialogData.value.title = '文章详情'
+  dialogData.value.status = 'preview'
   dialogData.value.datas = item
   dialogVisible.value = true
 }

@@ -8,7 +8,7 @@
         <PackageOrCard v-if="activeName === 'second'" accountType="2" />
       </el-tab-pane>
       <el-tab-pane label="话费充值" name="third">
-        <PhoneCharge />
+        <PhoneCharge v-if="activeName === 'third'" />
       </el-tab-pane>
     </el-tabs>
   </div>

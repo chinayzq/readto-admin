@@ -121,7 +121,7 @@ const initDatas = () => {
   getArticleList({
     ...{
       storyType: 1,
-      keyword: keyword.value,
+      key: keyword.value,
       status: status.value,
       orderColumns: ['publish']
     },
