@@ -134,6 +134,7 @@ const getVirtuaUserList = () => {
 }
 getVirtuaUserList()
 const tagOptions = ref([])
+const tagMaps = ref({})
 const getTagList = () => {
   getAllTagList({
     page: 1,
@@ -142,6 +143,7 @@ const getTagList = () => {
   }).then((res) => {
     console.log(res)
     tagOptions.value = res.data.records.map((item) => {
+      tagMaps.value[item.name] = item.id
       return {
         value: item.id,
         label: item.name
@@ -276,6 +278,7 @@ const displayArtilceDetail = (id) => {
   getArticleDetail(id)
     .then((res) => {
       if (res.code === 1) {
+        res.data.tagIds = res.data.tags.split(',').map((item) => tagMaps.value[item])
         formData.value = { ...formData.value, ...res.data }
       }
     })
