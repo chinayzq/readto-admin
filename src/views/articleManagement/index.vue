@@ -233,10 +233,5 @@ const modelCloaseHandler = (freshFlag) => {
       cursor: pointer;
     }
   }
-  .pagination-container {
-    display: flex;
-    justify-content: center;
-    margin: 15px 0;
-  }
 }
 </style>

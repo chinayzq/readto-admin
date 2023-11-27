@@ -29,12 +29,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { getTaskList, taskStatusChange } from "@/api/task"
-import { ElMessage } from "element-plus"
-import LangSelector from "@/components/LangSelector/index.vue"
+import { ref } from 'vue'
+import { getTaskList, taskStatusChange } from '@/api/task'
+import { ElMessage } from 'element-plus'
+import LangSelector from '@/components/LangSelector/index.vue'
 
-const lang = ref("zh")
+const lang = ref('zh')
 const listLoading = ref(false)
 // status： 1-开，2-关
 const tableData = ref([])
@@ -46,7 +46,7 @@ const initDatas = () => {
     type: 400,
     idDes: false,
     lang: lang.value,
-    orderColumns: "id"
+    orderColumns: 'id'
   })
     .then((res) => {
       if (res.code === 1) {
@@ -75,7 +75,7 @@ const auditStatusChange = ({ status, taskId }) => {
     taskId
   }).then((res) => {
     if (res.code === 1) {
-      ElMessage.success("修改成功！")
+      ElMessage.success('修改成功！')
       initDatas()
     }
   })

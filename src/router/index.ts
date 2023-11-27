@@ -242,6 +242,54 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/statisticalManagement',
+    component: Layouts,
+    name: 'statisticalManagement',
+    redirect: '/statisticalManagement/user',
+    meta: {
+      title: '数据统计',
+      svgIcon: 'statistical'
+    },
+    children: [
+      {
+        path: 'user',
+        component: () => import('@/views/statistical/user/index.vue'),
+        name: 'user',
+        meta: {
+          title: '用户统计',
+          keepAlive: true
+        }
+      },
+      {
+        path: 'gold',
+        component: () => import('@/views/statistical/gold/index.vue'),
+        name: 'gold',
+        meta: {
+          title: '金币统计',
+          keepAlive: true
+        }
+      },
+      {
+        path: 'goldList',
+        component: () => import('@/views/statistical/goldList/index.vue'),
+        name: 'goldList',
+        meta: {
+          title: '金币榜',
+          keepAlive: true
+        }
+      },
+      {
+        path: 'activation',
+        component: () => import('@/views/statistical/activation/index.vue'),
+        name: 'activation',
+        meta: {
+          title: '用户活跃',
+          keepAlive: true
+        }
+      }
+    ]
   }
   // {
   //   path: "/unocss",

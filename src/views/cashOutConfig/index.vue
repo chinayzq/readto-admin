@@ -8,7 +8,8 @@
         <PackageOrCard v-if="activeName === 'second'" accountType="2" />
       </el-tab-pane>
       <el-tab-pane label="话费充值" name="third">
-        <PhoneCharge v-if="activeName === 'third'" />
+        <PackageOrCard v-if="activeName === 'third'" accountType="3" />
+        <!-- <PhoneCharge v-if="activeName === 'third'" /> -->
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -18,7 +19,7 @@
 // accountType: 1：电子钱包，2：银行卡，3：话费
 import { ref } from 'vue'
 import PackageOrCard from './components/packageOrCard.vue'
-import PhoneCharge from './components/phoneCharge.vue'
+// import PhoneCharge from './components/phoneCharge.vue'
 const activeName = ref('first')
 </script>
 
