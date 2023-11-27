@@ -124,10 +124,10 @@ const rateMaps = ref({
   ph: 10
 })
 // 当前美元汇率
-const usdRate = ref(1000000)
-getUsdRate().then((res) => {
-  usdRate.value = Number(res.data)
-})
+// const usdRate = ref(1000000)
+// getUsdRate().then((res) => {
+//   usdRate.value = Number(res.data)
+// })
 // 各币种对美元汇率
 // const rateKeyMaps = ref({
 //   zh: 'zh_usd_rate',
