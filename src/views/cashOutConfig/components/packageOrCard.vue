@@ -58,10 +58,11 @@
           </el-col>
           <el-col :span="24">
             <el-form-item :label="`${moneyNameMap[lang]}：`" prop="rate">
-              <span>
-                <!-- 当前钱= 金币数/100w * 当前币种美元汇率 -->
+              <!-- 当前钱= 金币数/100w * 当前币种美元汇率 -->
+              <!-- <span>
                 {{ (formData.level / usdRate) * rateMaps[lang] }}
-              </span>
+              </span> -->
+              <el-input placeholder="" v-model="formData.rate" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -88,9 +89,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getRateList, updateRateStatus } from '@/api/payment'
+import { getRateList, updateRateStatus, rateSaveOrUpdate } from '@/api/payment'
 import LangSelector from '@/components/LangSelector/index.vue'
-import { getUsdRate, getMoneyChargeRateList } from '@/api/payment'
+// import { getUsdRate, getMoneyChargeRateList } from '@/api/payment'
 import { ElMessage } from 'element-plus'
 
 const limitOptions = ref([
@@ -117,12 +118,12 @@ const moneyNameMap = ref({
   id: '印尼汇盾',
   ph: '菲律宾比索'
 })
-const rateMaps = ref({
-  zh: 10,
-  en: 10,
-  id: 10,
-  ph: 10
-})
+// const rateMaps = ref({
+//   zh: 10,
+//   en: 10,
+//   id: 10,
+//   ph: 10
+// })
 // 当前美元汇率
 // const usdRate = ref(1000000)
 // getUsdRate().then((res) => {
@@ -201,6 +202,7 @@ const statusChange = ({ status, id }) => {
 const editDialogShow = ref(false)
 const formData = ref({
   level: '',
+  rate: '',
   limit: '',
   audit: 1,
   id: ''
@@ -218,10 +220,14 @@ const submitHandler = () => {
     ...formData.value,
     ...{
       lang: lang.value,
-      accountType: props.accountType
+      accountType: Number(props.accountType)
     }
   }
   console.log('params', params)
+  params.rate = Number(params.rate)
+  rateSaveOrUpdate(params).then((res) => {
+    console.log(res)
+  })
 }
 </script>
 
