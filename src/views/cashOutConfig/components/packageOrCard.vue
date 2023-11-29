@@ -6,7 +6,11 @@
         <el-table-column type="index" label="序号" width="60" />
         <el-table-column prop="level" label="提现档位" />
         <el-table-column prop="rate" :label="moneyNameMap[lang]" />
-        <el-table-column prop="limit" label="限制/次" />
+        <el-table-column prop="limit" label="限制/次">
+          <template #default="scope">
+            {{ limitMaps[scope.row.limit] }}
+          </template>
+        </el-table-column>
         <el-table-column prop="audit" label="是否要审核">
           <template #default="scope">
             <span>
@@ -96,22 +100,34 @@ import { ElMessage } from 'element-plus'
 
 const limitOptions = ref([
   {
-    value: 1,
+    value: '0-1',
     label: '1次'
   },
   {
-    value: 2,
+    value: '0-2',
     label: '2次'
   },
   {
-    value: 3,
+    value: '0-3',
     label: '3次'
   },
   {
-    value: 0,
+    value: '0-0',
     label: '不限制'
   }
 ])
+const limitMaps = ref({
+  '0-1': '1次',
+  '0-2': '2次',
+  '0-3': '3次',
+  '0-0': '不限'
+})
+const limitValueMaps = ref({
+  '0-1': 1,
+  '0-2': 2,
+  '0-3': 3,
+  '0-0': 0
+})
 const moneyNameMap = ref({
   zh: '人民币',
   en: '美元',
@@ -220,13 +236,18 @@ const submitHandler = () => {
     ...formData.value,
     ...{
       lang: lang.value,
-      accountType: Number(props.accountType)
+      accountType: Number(props.accountType),
+      limit: limitValueMaps.value[formData.value.limit]
     }
   }
   console.log('params', params)
   params.rate = Number(params.rate)
   rateSaveOrUpdate(params).then((res) => {
-    console.log(res)
+    if (res.code === 1) {
+      ElMessage.success('更新成功！')
+      handleClose()
+      initDatas()
+    }
   })
 }
 </script>

@@ -91,10 +91,10 @@ export function setMoneyChargeRate(params) {
 }
 
 /** 汇率更新 */
-export function rateSaveOrUpdate(data) {
+export function rateSaveOrUpdate(params) {
   return request({
     url: '/rate/saveOrUpdate',
     method: 'post',
-    data
+    params
   })
 }

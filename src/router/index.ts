@@ -290,6 +290,36 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/system',
+    component: Layouts,
+    name: 'system',
+    redirect: '/system/config',
+    meta: {
+      title: '系统管理',
+      svgIcon: 'system'
+    },
+    children: [
+      {
+        path: 'config',
+        component: () => import('@/views/system/config/index.vue'),
+        name: 'config',
+        meta: {
+          title: '系统配置',
+          keepAlive: true
+        }
+      },
+      {
+        path: 'algorithm',
+        component: () => import('@/views/system/algorithm/index.vue'),
+        name: 'algorithm',
+        meta: {
+          title: '算法维度管理',
+          keepAlive: true
+        }
+      }
+    ]
   }
   // {
   //   path: "/unocss",
