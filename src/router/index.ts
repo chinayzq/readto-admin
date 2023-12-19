@@ -47,16 +47,16 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: '/userManagement',
     component: Layouts,
     name: 'userManagement',
-    redirect: '/userManagement/user',
+    redirect: '/userManagement/userManage',
     meta: {
       title: '用户管理',
       svgIcon: 'user'
     },
     children: [
       {
-        path: 'user',
-        component: () => import('@/views/user/index.vue'),
-        name: 'user',
+        path: 'userManage',
+        component: () => import('@/views/userManage/index.vue'),
+        name: 'userManage',
         meta: {
           title: '用户管理',
           keepAlive: true

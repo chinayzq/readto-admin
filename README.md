@@ -13,3 +13,7 @@ APP原型地址：
 访问地址：
 
 - https://test.readtox.com/admin/
+
+问题看板：  
+
+- https://www.banlikanban.com/kanban/657adc5aed8bc264e1a3d73b
