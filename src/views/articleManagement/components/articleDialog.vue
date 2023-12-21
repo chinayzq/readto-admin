@@ -70,6 +70,9 @@
                   <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
+              <el-form-item label="文章语言" prop="lang">
+                <LangSelector @change="langChange" />
+              </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="48">
@@ -82,6 +85,7 @@
                     :defaultConfig="toolbarConfig"
                     mode="default"
                   />
+                  <!-- @customPaste="customPaste" -->
                   <Editor
                     style="height: 500px; width: 100%; overflow-y: hidden"
                     v-model="formData.content"
@@ -117,7 +121,129 @@ import { articleUpdate, getArticleDetail, getAllTagList } from '@/api/article'
 import { getToken } from '@/utils/cache/cookies'
 import { ElMessage } from 'element-plus'
 import { formatDateTime } from '@/utils'
+import LangSelector from '@/components/LangSelector/index.vue'
 
+const customPaste = (editor, event, callback) => {
+  console.log('ClipboardEvent 粘贴事件对象', event)
+  let html = event.clipboardData.getData('text/html') // 获取粘贴的 html
+  // let text = event.clipboardData.getData('text/plain') // 获取粘贴的纯文本
+  // const rtf = event.clipboardData.getData('text/rtf') // 获取 rtf 数据（如从 word wsp 复制粘贴）
+  if (html) {
+    // 列表缩进会超出边框，直接过滤掉
+    html = html.replace(/text\-indent:\-(.*?)pt/gi, '')
+    editor.dangerouslyInsertHtml(html)
+
+    // 从html内容中查找粘贴内容中是否有图片元素，并返回img标签的属性src值的集合
+    const imgSrcs = findAllImgSrcsFromHtml(html)
+    console.log('imgSrcs', imgSrcs)
+    // // 如果有
+    // if (imgSrcs && Array.isArray(imgSrcs) && imgSrcs.length) {
+    //   // 从rtf内容中查找图片数据
+    //   const rtfImageData = extractImageDataFromRtf(rtf)
+
+    //   // 如果找到
+    //   if (rtfImageData.length) {
+    //     // TODO：此处可以将图片上传到自己的服务器上
+
+    //     // 执行替换：将html内容中的img标签的src替换成ref中的图片数据，如果上面上传了则为图片路径
+    //     html = replaceImagesFileSourceWithInlineRepresentation(html, imgSrcs, rtfImageData)
+    //     editor.dangerouslyInsertHtml(html)
+    //   }
+    // }
+
+    // 阻止默认的粘贴行为
+    event.preventDefault()
+    return false
+  } else {
+    return true
+  }
+}
+
+/**
+ * 从html代码中匹配返回图片标签img的属性src的值的集合
+ * @param htmlData
+ * @return Array
+ */
+const findAllImgSrcsFromHtml = (htmlData) => {
+  const imgReg = /<img.*?(?:>|\/>)/gi //匹配图片中的img标签
+  const srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i // 匹配图片中的src
+
+  const arr = htmlData.match(imgReg) //筛选出所有的img
+  if (!arr || (Array.isArray(arr) && !arr.length)) {
+    return false
+  }
+
+  const srcArr = []
+  for (let i = 0; i < arr.length; i++) {
+    const src = arr[i].match(srcReg)
+    // 获取图片地址
+    srcArr.push(src[1])
+  }
+
+  return srcArr
+}
+
+/** * 从rtf内容中匹配返回图片数据的集合 * @param rtfData * @return Array */
+const extractImageDataFromRtf = (rtfData) => {
+  if (!rtfData) {
+    return []
+  }
+  const regexPictureHeader = /{\\pict[\s\S]+?({\\\*\\blipuid\s?[\da-fA-F]+)[\s}]*/
+  const regexPicture = new RegExp('(?:(' + regexPictureHeader.source + '))([\\da-fA-F\\s]+)\\}', 'g')
+  const images = rtfData.match(regexPicture)
+  const result = []
+  if (images) {
+    for (const image of images) {
+      let imageType = false
+      if (image.includes('\\pngblip')) {
+        imageType = 'image/png'
+      } else if (image.includes('\\jpegblip')) {
+        imageType = 'image/jpeg'
+      }
+      if (imageType) {
+        result.push({ hex: image.replace(regexPictureHeader, '').replace(/[^\da-fA-F]/g, ''), type: imageType })
+      }
+    }
+  }
+  return result
+}
+
+/** *
+ * 将html内容中img标签的属性值替换 *
+ * @param htmlData html内容 *
+ * @param imageSrcs html中img的属性src的值的集合 *
+ * @param imagesHexSources rtf中图片数据的集合，与html内容中的img标签对应 *
+ * @param isBase64Data 是否是Base64的图片数据 *
+ *  @return String */
+const replaceImagesFileSourceWithInlineRepresentation = (
+  htmlData,
+  imageSrcs,
+  imagesHexSources,
+  isBase64Data = true
+) => {
+  if (imageSrcs.length === imagesHexSources.length) {
+    for (let i = 0; i < imageSrcs.length; i++) {
+      const newSrc = isBase64Data
+        ? `data:${imagesHexSources[i].type};base64,${_convertHexToBase64(imagesHexSources[i].hex)}`
+        : imagesHexSources[i]
+      htmlData = htmlData.replace(imageSrcs[i], newSrc)
+    }
+  }
+  return htmlData
+}
+/**
+ * 十六进制转base64
+ */
+const _convertHexToBase64 = (hexString) => {
+  return btoa(
+    hexString
+      .match(/\w{2}/g)
+      .map((char) => {
+        return String.fromCharCode(parseInt(char, 16))
+      })
+      .join('')
+  )
+}
 //#region 虚拟用户列表
 const userIdOptions = ref([])
 const getVirtuaUserList = () => {
@@ -190,6 +316,9 @@ const handleClose = (flag) => {
 }
 
 //#region 保存、更新
+const langChange = (value) => {
+  formData.value.lang = value
+}
 const articleFormIns = ref(null)
 const formData = ref({
   name: null,
@@ -225,8 +354,8 @@ const submitHandler = () => {
   articleFormIns.value.validate((valid) => {
     if (valid) {
       console.log('formData', formData.value)
-      const { name, content, userId, storyType, tagIds } = formData.value
-      const params = { name, content, userId, storyType, tagIds }
+      const { name, content, userId, storyType, tagIds, lang } = formData.value
+      const params = { name, content, userId, storyType, tagIds, lang }
       if (props.dataset.datas.id) {
         params.id = props.dataset.datas.id
       }

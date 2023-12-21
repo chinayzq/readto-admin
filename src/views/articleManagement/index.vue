@@ -3,6 +3,9 @@
     <div class="search-line">
       <el-row :gutter="20">
         <el-col :span="2">
+          <LangSelector @change="langChange" />
+        </el-col>
+        <el-col :span="2">
           <el-select v-model="status" placeholder="审核" clearable @change="initDatas">
             <el-option v-for="item in verifyOption" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
@@ -81,6 +84,8 @@ import { ElMessageBox, ElMessage } from 'element-plus'
 import ArticleDialog from './components/articleDialog.vue'
 import { getArticleList, deleteArticle, updateArticleStatus } from '@/api/article'
 import { formatDateTime } from '@/utils'
+import LangSelector from '@/components/LangSelector/index.vue'
+
 //#region 查询
 // status -0:草稿 1: 审核中，2: 审核未通过, 3 审核通过
 const statusMap = ref({
@@ -116,6 +121,7 @@ const verifyOption = ref([
     value: 2
   }
 ])
+const lang = ref('zh')
 const initDatas = () => {
   listLoading.value = true
   getArticleList({
@@ -123,6 +129,7 @@ const initDatas = () => {
       storyType: 1,
       key: keyword.value,
       status: status.value,
+      lang: lang.value,
       orderColumns: ['publish']
     },
     ...pageVO.value
@@ -138,7 +145,10 @@ const initDatas = () => {
       listLoading.value = false
     })
 }
-initDatas()
+const langChange = (value) => {
+  lang.value = value
+  initDatas()
+}
 const linkButtonClick = (key) => {
   keyword.value = key
   initDatas()
