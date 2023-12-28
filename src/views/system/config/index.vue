@@ -21,20 +21,20 @@
     <el-dialog
       v-model="editDialogShow"
       :close-on-click-modal="false"
-      :title="`修改配置 - ${formData.label}`"
+      title="修改配置"
       width="600"
       :before-close="handleClose"
     >
       <el-form label-position="right" label-width="120px" ref="formIns" :rules="formRules" :model="formData">
         <el-row :gutter="48">
           <el-col :span="24">
-            <el-form-item label="标题：" prop="key">
-              <span>{{ formData.label }}</span>
+            <el-form-item label="标题：" prop="lable">
+              <span>{{ formData.lable }}</span>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="key：" prop="key">
-              <el-input placeholder="" v-model="formData.key" />
+              <el-input disabled placeholder="" v-model="formData.key" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -56,6 +56,7 @@
 import { ref } from 'vue'
 import { getSysConfigList, sysConfigUpdate } from '@/api/system'
 import { formatDateTime } from '@/utils'
+import { ElMessage } from 'element-plus'
 
 const tableData = ref([])
 const tableLoading = ref(false)
@@ -64,6 +65,7 @@ const initDatas = () => {
   getSysConfigList()
     .then((res) => {
       console.log(res)
+      tableData.value = res.data
     })
     .finally(() => {
       tableLoading.value = false
@@ -105,6 +107,7 @@ const handleEdit = (row) => {
   formData.value = row
   editDialogShow.value = true
 }
+const formIns = ref(null)
 const submitHandler = () => {
   formIns.value.validate((valid) => {
     if (valid) {
@@ -119,4 +122,9 @@ const submitHandler = () => {
 }
 </script>
 
-<style></style>
+<style>
+.button-container {
+  margin: 15px 0;
+  text-align: right;
+}
+</style>

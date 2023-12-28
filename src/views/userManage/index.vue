@@ -65,14 +65,24 @@
             <span>{{ scope.row.age || '-' }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="bindPhone" label="联系方式">
+        <el-table-column prop="bindPhone" label="手机号">
           <template #default="scope">
             <span>{{ scope.row.bindPhone || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="email" label="邮箱">
+          <template #default="scope">
+            <span>{{ scope.row.email || '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="subCnt" label="下级">
           <template #default="scope">
             <span class="link-button" @click="lookSubList(scope.row)">{{ scope.row.subCnt }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="pnickeName" label="上级">
+          <template #default="scope">
+            <span>{{ scope.row.pnickeName || '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="active" label="激活状态">

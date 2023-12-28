@@ -7,7 +7,7 @@
       width="500"
       :before-close="handleClose"
     >
-      具体操作待讨论
+      具体操作待讨论2
     </el-dialog>
   </div>
 </template>
@@ -28,9 +28,9 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 const handleClose = (flag) => {
-  emit("close", flag)
+  emit('close', flag)
 }
 </script>
 
