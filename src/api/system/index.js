@@ -17,3 +17,12 @@ export function sysConfigUpdate(data) {
     data
   })
 }
+
+/** 获取金币榜 */
+export function getUserGoldList(params) {
+  return request({
+    url: '/summary/gold/list',
+    method: 'get',
+    params
+  })
+}

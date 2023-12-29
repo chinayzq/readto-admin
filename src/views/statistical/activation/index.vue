@@ -37,7 +37,7 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import { getLiveUserList } from '@/api/user'
 const searchForm = ref({
   nickeName: null
 })
@@ -49,7 +49,12 @@ const pageVO = ref({
   pageSize: 10
 })
 const total = ref(0)
-const initDatas = () => {}
+const initDatas = () => {
+  getLiveUserList(pageVO.value).then((res) => {
+    console.log('getLiveUserList', res)
+  })
+}
+initDatas()
 const handleCurrentChange = (page) => {
   pageVO.value.page = page
   initDatas()

@@ -16,9 +16,14 @@
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="comSumCount" label="头像" />
-        <el-table-column prop="comSumCount" label="昵称" />
-        <el-table-column prop="comSumCount" label="总收益" />
+        <el-table-column prop="headImg" label="头像">
+          <template #default="scope">
+            <img class="list-user-icon" v-if="scope.row.headImg" :src="scope.row.headImg" alt="" />
+            <img class="list-user-icon" v-else src="@/assets/user/user_default_icon.png" alt="" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="nickeName" label="昵称" />
+        <el-table-column prop="accumulatedGoldCoins" label="总收益" />
         <el-table-column prop="comSumCount" label="总提现" />
       </el-table>
       <div class="pagination-container">
@@ -36,6 +41,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { getUserGoldList } from '@/api/system'
 
 const durationOptions = ref([
   {
@@ -75,7 +81,18 @@ const pageVO = ref({
   pageSize: 10
 })
 const total = ref(0)
-const initDatas = () => {}
+const initDatas = () => {
+  getUserGoldList({
+    ...pageVO.value,
+    ...{
+      key: searchForm.value.nickeName
+    }
+  }).then((res) => {
+    tableData.value = res.data.records
+    total.value = res.data.total
+  })
+}
+initDatas()
 const handleCurrentChange = (page) => {
   pageVO.value.page = page
   initDatas()
@@ -84,5 +101,9 @@ const handleCurrentChange = (page) => {
 
 <style lang="scss" scoped>
 .statistical-gold-list {
+  .list-user-icon {
+    height: 30px;
+    width: 30px;
+  }
 }
 </style>
