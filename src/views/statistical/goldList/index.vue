@@ -2,7 +2,7 @@
   <div class="app-container statistical-gold-list">
     <el-row :gutter="20" class="search-line">
       <el-col :span="4">
-        <el-select style="width: 100%" v-model="searchForm.duration" placeholder="周期" @change="initDatas">
+        <el-select style="width: 100%" v-model="searchForm.duration" placeholder="周期" @change="durationChange">
           <el-option v-for="item in durationOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-col>
@@ -23,8 +23,8 @@
           </template>
         </el-table-column>
         <el-table-column prop="nickeName" label="昵称" />
-        <el-table-column prop="accumulatedGoldCoins" label="总收益" />
-        <el-table-column prop="comSumCount" label="总提现" />
+        <el-table-column prop="totalIncome" label="总收益" />
+        <el-table-column prop="totalCashout" label="总提现" />
       </el-table>
       <div class="pagination-container">
         <el-pagination
@@ -69,6 +69,12 @@ const durationOptions = ref([
     label: '所有'
   }
 ])
+const durationChange = (value) => {
+  switch (value) {
+    case 1:
+      break
+  }
+}
 const searchForm = ref({
   duration: [],
   nickeName: null
@@ -85,7 +91,7 @@ const initDatas = () => {
   getUserGoldList({
     ...pageVO.value,
     ...{
-      key: searchForm.value.nickeName
+      nickName: searchForm.value.nickeName
     }
   }).then((res) => {
     tableData.value = res.data.records
