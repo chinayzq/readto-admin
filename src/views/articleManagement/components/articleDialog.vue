@@ -59,6 +59,13 @@
                   <el-option v-for="item in userIdOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="文章语言" prop="lang">
+                <LangSelector @change="langChange" :default="formData.lang" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
               <el-form-item label="文章标签" prop="tagIds">
                 <el-select
                   :disabled="currentStatus === 'preview'"
@@ -70,15 +77,12 @@
                   <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
-              <el-form-item label="文章语言" prop="lang">
-                <LangSelector @change="langChange" />
-              </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="48">
             <el-col :span="24">
               <el-form-item label="文章详情" prop="content">
-                <div class="editor-container">
+                <div class="editor-container" v-if="dialogShow">
                   <Toolbar
                     style="border-bottom: 1px solid #ccc"
                     :editor="editorRef"
@@ -105,7 +109,7 @@
         </div>
         <div v-else>
           <el-button @click="handleClose">取消</el-button>
-          <el-button type="primary" @click="submitHandler">保存</el-button>
+          <el-button type="primary" @click="submitHandler" v-loading="submitLoading">保存</el-button>
         </div>
       </div>
     </el-dialog>
@@ -122,7 +126,20 @@ import { getToken } from '@/utils/cache/cookies'
 import { ElMessage } from 'element-plus'
 import { formatDateTime } from '@/utils'
 import LangSelector from '@/components/LangSelector/index.vue'
-
+const props = defineProps({
+  dialogVisible: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
+  dataset: {
+    type: Object,
+    default() {
+      return {}
+    }
+  }
+})
 const customPaste = (editor, event, callback) => {
   console.log('ClipboardEvent 粘贴事件对象', event)
   let html = event.clipboardData.getData('text/html') // 获取粘贴的 html
@@ -244,6 +261,70 @@ const _convertHexToBase64 = (hexString) => {
       .join('')
   )
 }
+
+//#region 保存、更新
+const langChange = (value) => {
+  formData.value.lang = value
+  formData.value.tagIds = []
+  getTagList()
+}
+const articleFormIns = ref(null)
+const formData = ref({
+  name: null,
+  content: '',
+  userId: null,
+  storyType: 1,
+  id: null,
+  status: 1,
+  publish: null,
+  totalWords: null,
+  author: null,
+  comSumCount: null,
+  praise: null,
+  tagIds: [],
+  lang: props.dataset.lang
+})
+const formRules = ref({
+  name: [
+    {
+      required: true,
+      message: '请输入文章标题!',
+      trigger: 'blur'
+    }
+  ],
+  userId: [
+    {
+      required: true,
+      message: '请选择发布人!',
+      trigger: 'blur'
+    }
+  ]
+})
+const submitLoading = ref(false)
+const submitHandler = () => {
+  articleFormIns.value.validate((valid) => {
+    if (valid) {
+      submitLoading.value = true
+      const { name, content, userId, storyType, tagIds, lang } = formData.value
+      const params = { name, content, userId, storyType, tagIds, lang }
+      if (props.dataset.datas.id) {
+        params.id = props.dataset.datas.id
+      }
+      articleUpdate(params)
+        .then((res) => {
+          if (res.code === 1) {
+            ElMessage.success('保存文章成功！')
+            handleClose(true)
+          }
+        })
+        .finally(() => {
+          submitLoading.value = false
+        })
+    }
+  })
+}
+//#endregion
+
 //#region 虚拟用户列表
 const userIdOptions = ref([])
 const getVirtuaUserList = () => {
@@ -262,12 +343,12 @@ getVirtuaUserList()
 const tagOptions = ref([])
 const tagMaps = ref({})
 const getTagList = () => {
+  if (!formData.value.lang) return
   getAllTagList({
     page: 1,
     pageSize: 9999,
-    lang: 'zh'
+    lang: formData.value.lang
   }).then((res) => {
-    console.log(res)
     tagOptions.value = res.data.records.map((item) => {
       tagMaps.value[item.name] = item.id
       return {
@@ -315,89 +396,19 @@ const handleClose = (flag) => {
   emit('close', flag)
 }
 
-//#region 保存、更新
-const langChange = (value) => {
-  formData.value.lang = value
-}
-const articleFormIns = ref(null)
-const formData = ref({
-  name: null,
-  content: '',
-  userId: null,
-  storyType: 1,
-  id: null,
-  status: 1,
-  publish: null,
-  totalWords: null,
-  author: null,
-  comSumCount: null,
-  praise: null,
-  tagIds: []
-})
-const formRules = ref({
-  name: [
-    {
-      required: true,
-      message: '请输入文章标题!',
-      trigger: 'blur'
-    }
-  ],
-  userId: [
-    {
-      required: true,
-      message: '请选择发布人!',
-      trigger: 'blur'
-    }
-  ]
-})
-const submitHandler = () => {
-  articleFormIns.value.validate((valid) => {
-    if (valid) {
-      console.log('formData', formData.value)
-      const { name, content, userId, storyType, tagIds, lang } = formData.value
-      const params = { name, content, userId, storyType, tagIds, lang }
-      if (props.dataset.datas.id) {
-        params.id = props.dataset.datas.id
-      }
-      articleUpdate(params).then((res) => {
-        if (res.code === 1) {
-          ElMessage.success('保存文章成功！')
-          handleClose(true)
-        }
-      })
-    }
-  })
-}
-//#endregion
-
 //#region display datas
 const dialogLoading = ref(false)
 const currentStatus = ref('add')
-const props = defineProps({
-  dialogVisible: {
-    type: Boolean,
-    default() {
-      return false
-    }
-  },
-  dataset: {
-    type: Object,
-    default() {
-      return {}
-    }
-  }
-})
 const dialogShow = computed(() => props.dialogVisible)
 watch(
   () => props.dataset,
   (datas) => {
-    console.log('datas', datas)
     currentStatus.value = datas.status
     setEditorDisableStatus(currentStatus.value === 'preview')
     if (datas.datas.id) {
       displayArtilceDetail(datas.datas.id)
     } else {
-      resetFormData()
+      resetFormData(datas.lang)
     }
   },
   { deep: true }
@@ -407,15 +418,16 @@ const displayArtilceDetail = (id) => {
   getArticleDetail(id)
     .then((res) => {
       if (res.code === 1) {
-        res.data.tagIds = res.data.tags.split(',').map((item) => tagMaps.value[item])
+        res.data.tagIds = res.data.tags ? res.data.tags.split(',').map((item) => tagMaps.value[item]) : []
         formData.value = { ...formData.value, ...res.data }
       }
     })
     .finally(() => {
+      getTagList()
       dialogLoading.value = false
     })
 }
-const resetFormData = () => {
+const resetFormData = (lang) => {
   formData.value = {
     name: null,
     content: '',
@@ -427,8 +439,10 @@ const resetFormData = () => {
     totalWords: null,
     author: null,
     comSumCount: null,
-    praise: null
+    praise: null,
+    lang
   }
+  getTagList()
 }
 const setEditorDisableStatus = (isDisable) => {
   const editor = editorRef.value

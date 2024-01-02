@@ -16,6 +16,7 @@
         <el-col :span="5">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
           <el-button type="primary" :icon="CirclePlus" @click="articleAddOpen">新增文章</el-button>
+          <el-button type="primary" :icon="RefreshRight" @click="initDatas">刷新</el-button>
         </el-col>
       </el-row>
     </div>
@@ -60,6 +61,7 @@
           <template #default="scope">
             <el-button type="primary" link bg size="small" @click="articleEditOpen(scope.row)">编辑</el-button>
             <el-button type="danger" link bg size="small" @click="handleDelete(scope.row)">删除</el-button>
+            <!-- <el-button type="primary" link bg size="small" @click="articleEditOpen(scope.row)">刷新</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -78,7 +80,7 @@
 </template>
 
 <script setup>
-import { Search, CirclePlus } from '@element-plus/icons-vue'
+import { Search, CirclePlus, RefreshRight } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import ArticleDialog from './components/articleDialog.vue'
@@ -200,6 +202,7 @@ const auditStatusChange = ({ id, statusSuccess }) => {
 //#region 新增、编辑、预览弹框
 const dialogVisible = ref(false)
 const dialogData = ref({
+  lang: lang.value,
   title: '新增文章',
   status: 'add', // 新增 - add, 预览 - preview, 编辑 - edit
   datas: {}
@@ -208,11 +211,13 @@ const articleAddOpen = () => {
   dialogData.value.title = '新增文章'
   dialogData.value.status = 'add'
   dialogData.value.datas = {}
+  dialogData.value.lang = lang.value
   dialogVisible.value = true
 }
 const articleEditOpen = (item) => {
   dialogData.value.title = '编辑文章'
   dialogData.value.status = 'edit'
+  dialogData.value.lang = lang.value
   dialogData.value.datas = item
   dialogVisible.value = true
 }
