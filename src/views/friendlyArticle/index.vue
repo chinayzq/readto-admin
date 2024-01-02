@@ -13,8 +13,9 @@
         <el-col :span="4">
           <el-input v-model="keyword" clearable @input="initDatas" placeholder="输入标题/作者搜索文章" />
         </el-col>
-        <el-col :span="5">
+        <el-col :span="16">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
+          <el-button type="primary" :icon="RefreshRight" @click="initDatas">刷新</el-button>
         </el-col>
       </el-row>
     </div>
@@ -77,7 +78,7 @@
 </template>
 
 <script setup>
-import { Search } from '@element-plus/icons-vue'
+import { Search, RefreshRight } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { getArticleList, deleteArticle, updateArticleStatus } from '@/api/article'

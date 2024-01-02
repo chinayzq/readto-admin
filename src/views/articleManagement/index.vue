@@ -13,7 +13,7 @@
         <el-col :span="4">
           <el-input v-model="keyword" clearable @input="initDatas" placeholder="输入标题/作者搜索文章" />
         </el-col>
-        <el-col :span="5">
+        <el-col :span="16">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
           <el-button type="primary" :icon="CirclePlus" @click="articleAddOpen">新增文章</el-button>
           <el-button type="primary" :icon="RefreshRight" @click="initDatas">刷新</el-button>
