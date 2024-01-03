@@ -318,8 +318,13 @@ const submitLoading = ref(false)
 const submitHandler = () => {
   try {
     const contentLength = editorRef.value.getText().length
+    console.log('contentLength', editorRef.value.getText())
     if (contentLength < 1000) {
       ElMessage.warning(`当前文章字数：${contentLength}, 长度不能少于1000字符！`)
+      return
+    }
+    if (contentLength > 10000) {
+      ElMessage.warning(`当前文章字数：${contentLength}, 长度不能大于10000字符！`)
       return
     }
   } catch (error) {
