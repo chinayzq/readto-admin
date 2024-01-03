@@ -9,21 +9,21 @@
         <el-table-column prop="Chinese" label="中文">
           <template #default="scope">
             <span>
-              {{ getCatelogDetail(scope.row, "zh") }}
+              {{ getCatelogDetail(scope.row, 'zh') }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="English" label="English">
+        <el-table-column prop="English" label="英文">
           <template #default="scope">
             <span>
-              {{ getCatelogDetail(scope.row, "en") }}
+              {{ getCatelogDetail(scope.row, 'en') }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="Indonesia" label="Bahasa Indonesia">
+        <el-table-column prop="Indonesia" label="印尼">
           <template #default="scope">
             <span>
-              {{ getCatelogDetail(scope.row, "id") }}
+              {{ getCatelogDetail(scope.row, 'id') }}
             </span>
           </template>
         </el-table-column>
@@ -59,11 +59,11 @@
 </template>
 
 <script setup>
-import { CirclePlus } from "@element-plus/icons-vue"
-import { ref } from "vue"
-import CatelogDialog from "./components/catelogDialog.vue"
-import { getArticleCatelogList, updateArticleCatelogStatus, deleteArticleCatelog } from "@/api/article"
-import { ElMessage, ElMessageBox } from "element-plus"
+import { CirclePlus } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import CatelogDialog from './components/catelogDialog.vue'
+import { getArticleCatelogList, updateArticleCatelogStatus, deleteArticleCatelog } from '@/api/article'
+import { ElMessage, ElMessageBox } from 'element-plus'
 const pageVO = ref({
   page: 1,
   pageSize: 10
@@ -95,7 +95,7 @@ const auditStatusChange = ({ status, id }) => {
     id
   }).then((res) => {
     if (res.code === 1) {
-      ElMessage.success("保存成功！")
+      ElMessage.success('保存成功！')
       initDatas()
     }
   })
@@ -103,33 +103,33 @@ const auditStatusChange = ({ status, id }) => {
 
 const dialogDatas = ref({
   show: false,
-  title: "新增分类",
+  title: '新增分类',
   datas: {}
 })
 const catelogAdd = () => {
   dialogDatas.value.datas = {}
-  dialogDatas.value.title = "新增分类"
+  dialogDatas.value.title = '新增分类'
   dialogDatas.value.show = true
 }
 const configEditOpen = (row) => {
   dialogDatas.value.datas = row
-  dialogDatas.value.title = "编辑分类"
+  dialogDatas.value.title = '编辑分类'
   dialogDatas.value.show = true
 }
 const handleDelete = ({ id }) => {
-  ElMessageBox.confirm("确定删除该分类?", "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
+  ElMessageBox.confirm('确定删除该分类?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
   })
     .then(() => {
       deleteArticleCatelog(id).then(() => {
-        ElMessage.success("删除成功！")
+        ElMessage.success('删除成功！')
         initDatas()
       })
     })
     .catch(() => {
-      console.log("cancel the delete！")
+      console.log('cancel the delete！')
     })
 }
 const dialogClose = (fresh) => {
@@ -146,9 +146,9 @@ const getCatelogDetail = (list, type) => {
         return list.tagExtList[i].name
       }
     }
-    return "-"
+    return '-'
   }
-  return "-"
+  return '-'
 }
 </script>
 

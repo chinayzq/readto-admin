@@ -72,6 +72,7 @@
                   v-model="formData.tagIds"
                   multiple
                   placeholder="Select"
+                  multiple-limit="3"
                   style="width: 100%"
                 >
                   <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -137,6 +138,12 @@ const props = defineProps({
     type: Object,
     default() {
       return {}
+    }
+  },
+  allTagList: {
+    type: Array,
+    default() {
+      return []
     }
   }
 })
@@ -289,19 +296,35 @@ const formRules = ref({
     {
       required: true,
       message: '请输入文章标题!',
-      trigger: 'blur'
+      trigger: ['blur', 'change']
     }
   ],
   userId: [
     {
       required: true,
       message: '请选择发布人!',
-      trigger: 'blur'
+      trigger: ['blur', 'change']
+    }
+  ],
+  tagIds: [
+    {
+      required: true,
+      message: '请选择文章标签(最多3个)!',
+      trigger: ['blur', 'change']
     }
   ]
 })
 const submitLoading = ref(false)
 const submitHandler = () => {
+  try {
+    const contentLength = editorRef.value.getText().length
+    if (contentLength < 1000) {
+      ElMessage.warning(`当前文章字数：${contentLength}, 长度不能少于1000字符！`)
+      return
+    }
+  } catch (error) {
+    console.log('保存文章校验content长度失败：', error)
+  }
   articleFormIns.value.validate((valid) => {
     if (valid) {
       submitLoading.value = true
@@ -349,17 +372,37 @@ const getTagList = () => {
     pageSize: 9999,
     lang: formData.value.lang
   }).then((res) => {
-    tagOptions.value = res.data.records.map((item) => {
+    const result = res.data.records.map((item) => {
       tagMaps.value[item.name] = item.id
       return {
         value: item.id,
-        label: item.name
+        label: formData.value.lang === 'zh' ? item.name : getTagZHLabel(item.id, item.name)
       }
     })
+    tagOptions.value = result
   })
 }
 getTagList()
 //#endregion
+
+const getTagZHLabel = (tagId, tagName) => {
+  const allTagDats = props.allTagList
+  if (formData.value.lang === 'zh' || allTagDats?.length === 0) {
+    return tagName
+  }
+  let result = tagName
+  allTagDats.forEach((item) => {
+    if (item.id === tagId) {
+      item.tagExtList.forEach((single) => {
+        if (single.lang === 'zh') {
+          console.log('single.name', tagName, single.name)
+          result = `${tagName} （${single.name}）`
+        }
+      })
+    }
+  })
+  return result
+}
 
 //#region wangEditor config
 const editorRef = shallowRef()

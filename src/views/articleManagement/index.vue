@@ -6,6 +6,18 @@
           <LangSelector @change="langChange" />
         </el-col>
         <el-col :span="2">
+          <el-select
+            style="width: 100%"
+            filterable
+            v-model="selectTags"
+            placeholder="标签分类"
+            clearable
+            @change="initDatas"
+          >
+            <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.label" />
+          </el-select>
+        </el-col>
+        <el-col :span="2">
           <el-select v-model="status" placeholder="审核" clearable @change="initDatas">
             <el-option v-for="item in verifyOption" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
@@ -13,7 +25,7 @@
         <el-col :span="4">
           <el-input v-model="keyword" clearable @input="initDatas" placeholder="输入标题/作者搜索文章" />
         </el-col>
-        <el-col :span="16">
+        <el-col :span="12">
           <el-button type="primary" :icon="Search" @click="initDatas">查询</el-button>
           <el-button type="primary" :icon="CirclePlus" @click="articleAddOpen">新增文章</el-button>
           <el-button type="primary" :icon="RefreshRight" @click="initDatas">刷新</el-button>
@@ -75,7 +87,12 @@
         />
       </div>
     </div>
-    <ArticleDialog :dialogVisible="dialogVisible" @close="modelCloaseHandler" :dataset="dialogData" />
+    <ArticleDialog
+      :dialogVisible="dialogVisible"
+      :allTagList="allTagList"
+      @close="modelCloaseHandler"
+      :dataset="dialogData"
+    />
   </div>
 </template>
 
@@ -84,7 +101,7 @@ import { Search, CirclePlus, RefreshRight } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import ArticleDialog from './components/articleDialog.vue'
-import { getArticleList, deleteArticle, updateArticleStatus } from '@/api/article'
+import { getArticleList, deleteArticle, updateArticleStatus, getAllTagList, getArticleCatelogList } from '@/api/article'
 import { formatDateTime } from '@/utils'
 import LangSelector from '@/components/LangSelector/index.vue'
 
@@ -124,6 +141,7 @@ const verifyOption = ref([
   }
 ])
 const lang = ref('zh')
+const allTagList = ref([])
 const initDatas = () => {
   listLoading.value = true
   getArticleList({
@@ -132,6 +150,7 @@ const initDatas = () => {
       key: keyword.value,
       status: status.value,
       lang: lang.value,
+      tags: selectTags.value,
       orderColumns: ['publish']
     },
     ...pageVO.value
@@ -146,10 +165,18 @@ const initDatas = () => {
     .finally(() => {
       listLoading.value = false
     })
+  console.log('allTagList.value', allTagList.value.length)
+  if (allTagList.value.length === 0) {
+    getArticleCatelogList({ page: 1, pageSize: 999 }).then((res) => {
+      allTagList.value = res.data.records
+    })
+  }
 }
 const langChange = (value) => {
   lang.value = value
+  selectTags.value = null
   initDatas()
+  getTagList()
 }
 const linkButtonClick = (key) => {
   keyword.value = key
@@ -158,6 +185,23 @@ const linkButtonClick = (key) => {
 const handleCurrentChange = (page) => {
   pageVO.value.page = page
   initDatas()
+}
+const tagOptions = ref([])
+const selectTags = ref(null)
+const getTagList = () => {
+  if (!lang.value) return
+  getAllTagList({
+    page: 1,
+    pageSize: 9999,
+    lang: lang.value
+  }).then((res) => {
+    tagOptions.value = res.data.records.map((item) => {
+      return {
+        value: item.id,
+        label: item.name
+      }
+    })
+  })
 }
 //#endregion
 
