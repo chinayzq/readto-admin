@@ -145,6 +145,15 @@ const props = defineProps({
     default() {
       return []
     }
+  },
+  contentLimit: {
+    type: Object,
+    default() {
+      return {
+        min: 1000,
+        max: 10000
+      }
+    }
   }
 })
 const customPaste = (editor, event, callback) => {
@@ -319,12 +328,12 @@ const submitHandler = () => {
   try {
     const contentLength = editorRef.value.getText().length
     console.log('contentLength', editorRef.value.getText())
-    if (contentLength < 1000) {
-      ElMessage.warning(`当前文章字数：${contentLength}, 长度不能少于1000字符！`)
+    if (contentLength < props.contentLimit.min) {
+      ElMessage.warning(`当前文章字数：${contentLength}, 长度不能少于${props.contentLimit.min}字符！`)
       return
     }
-    if (contentLength > 10000) {
-      ElMessage.warning(`当前文章字数：${contentLength}, 长度不能大于10000字符！`)
+    if (contentLength > props.contentLimit.max) {
+      ElMessage.warning(`当前文章字数：${contentLength}, 长度不能大于${props.contentLimit.max}字符！`)
       return
     }
   } catch (error) {

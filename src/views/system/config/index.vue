@@ -114,7 +114,8 @@ const submitHandler = () => {
       sysConfigUpdate(formData.value).then((res) => {
         if (res.code === 1) {
           ElMessage.success('修改成功！')
-          handleClose(true)
+          handleClose()
+          initDatas()
         }
       })
     }

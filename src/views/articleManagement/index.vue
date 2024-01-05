@@ -90,6 +90,7 @@
     <ArticleDialog
       :dialogVisible="dialogVisible"
       :allTagList="allTagList"
+      :contentLimit="contentLimit"
       @close="modelCloaseHandler"
       :dataset="dialogData"
     />
@@ -104,6 +105,26 @@ import ArticleDialog from './components/articleDialog.vue'
 import { getArticleList, deleteArticle, updateArticleStatus, getAllTagList, getArticleCatelogList } from '@/api/article'
 import { formatDateTime } from '@/utils'
 import LangSelector from '@/components/LangSelector/index.vue'
+import { getSysConfigList } from '@/api/system'
+
+const contentLimit = ref({
+  min: 1000,
+  max: 10000
+})
+const initContentLimit = () => {
+  getSysConfigList().then((res) => {
+    res.data.forEach((item) => {
+      if (item.key === 'content_min_length') {
+        contentLimit.value.min = Number(item.value)
+      }
+      if (item.key === 'content_max_length') {
+        contentLimit.value.max = Number(item.value)
+      }
+    })
+    console.log('contentLimit', contentLimit.value)
+  })
+}
+initContentLimit()
 
 //#region 查询
 // status -0:草稿 1: 审核中，2: 审核未通过, 3 审核通过
