@@ -10,11 +10,11 @@ export function getSysConfigList(params) {
 }
 
 /** 获取系统配置列表 */
-export function sysConfigUpdate(data) {
+export function sysConfigUpdate(params) {
   return request({
     url: '/system/config',
     method: 'post',
-    data
+    params
   })
 }
 
