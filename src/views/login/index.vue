@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
-import { useRouter } from "vue-router"
-import { useUserStore } from "@/store/modules/user"
-import { type FormInstance, type FormRules } from "element-plus"
-import { User, Lock } from "@element-plus/icons-vue"
-import { type LoginRequestData } from "@/api/login/types/login"
-import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/modules/user'
+import { type FormInstance, type FormRules } from 'element-plus'
+import { User, Lock } from '@element-plus/icons-vue'
+import { type LoginRequestData } from '@/api/login/types/login'
+import ThemeSwitch from '@/components/ThemeSwitch/index.vue'
 
 const router = useRouter()
 
@@ -17,15 +17,15 @@ const loading = ref(false)
 const isDev = import.meta.env.VITE_ENV === 'DEV'
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
-  email: isDev ? '111' : "admin@qq.com",
-  lang: "en",
-  passWord: isDev ? '111' : "admin123"
+  email: isDev ? '111' : '',
+  lang: 'en',
+  passWord: isDev ? '111' : ''
   // code: ""
 })
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
-  email: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  passWord: [{ required: true, message: "请输入密码", trigger: "blur" }]
+  email: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  passWord: [{ required: true, message: '请输入密码', trigger: 'blur' }]
   // code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
 /** 登录逻辑 */
@@ -36,16 +36,16 @@ const handleLogin = () => {
       useUserStore()
         .login(loginFormData)
         .then(() => {
-          router.push({ path: "/" })
+          router.push({ path: '/' })
         })
         .catch(() => {
-          loginFormData.passWord = ""
+          loginFormData.passWord = ''
         })
         .finally(() => {
           loading.value = false
         })
     } else {
-      console.error("表单校验不通过", fields)
+      console.error('表单校验不通过', fields)
     }
   })
 }
