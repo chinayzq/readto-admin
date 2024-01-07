@@ -2,7 +2,7 @@
   <div class="app-container statistical-activation">
     <el-row :gutter="20" class="search-line">
       <el-col :span="4">
-        <el-input style="width: 100%" v-model="searchForm.name" placeholder="昵称" />
+        <el-input clearable style="width: 100%" v-model="searchForm.name" placeholder="昵称" />
       </el-col>
       <el-col :span="4">
         <el-button type="primary" @click="initDatas">查询</el-button>
@@ -61,17 +61,22 @@ const pageVO = ref({
 })
 const total = ref(0)
 const initDatas = () => {
+  listLoading.value = true
   getLiveUserList({
     ...pageVO.value,
     ...{
       // name: searchForm.value.name ? encodeURI(searchForm.value.name) : ''
-      name: 'Anjing%20liar%20tersebar'
-      // name: searchForm.value.name || ''
+      // name: 'Anjing%20liar%20tersebar'
+      name: searchForm.value.name || ''
     }
-  }).then((res) => {
-    tableData.value = res.data.records
-    total.value = res.data.total
   })
+    .then((res) => {
+      tableData.value = res.data.records
+      total.value = res.data.total
+    })
+    .finally(() => {
+      listLoading.value = false
+    })
 }
 initDatas()
 const handleCurrentChange = (page) => {
