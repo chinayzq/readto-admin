@@ -108,10 +108,19 @@ export function ipUnblock(data) {
   })
 }
 
+// /** 用户活跃列表 */
+// export function getLiveUserList(params) {
+//   return request({
+//     url: '/user/live/sum/list',
+//     method: 'get',
+//     params
+//   })
+// }
+
 /** 用户活跃列表 */
 export function getLiveUserList(params) {
   return request({
-    url: '/user/live/sum/list',
+    url: '/user/live/summary',
     method: 'get',
     params
   })
