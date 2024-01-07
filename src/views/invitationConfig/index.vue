@@ -25,12 +25,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import InviteEditDialog from "./components/inviteEditDialog.vue"
-import { getTaskList } from "@/api/task"
-import LangSelector from "@/components/LangSelector/index.vue"
+import { ref } from 'vue'
+import InviteEditDialog from './components/inviteEditDialog.vue'
+import { getTaskList } from '@/api/task'
+import LangSelector from '@/components/LangSelector/index.vue'
 
-const lang = ref("zh")
+const lang = ref('zh')
 const listLoading = ref(false)
 const tableData = ref([])
 const initDatas = () => {
@@ -38,10 +38,10 @@ const initDatas = () => {
   getTaskList({
     page: 1,
     pageSize: 20,
-    type: 300,
+    type: 8,
     idDes: true,
     lang: lang.value,
-    orderColumns: "id"
+    orderColumns: 'id'
   })
     .then((res) => {
       if (res.code === 1) {
@@ -62,7 +62,7 @@ const dialogDatas = ref({
   datas: {}
 })
 const configEditOpen = (row) => {
-  console.log("row", row)
+  console.log('row', row)
   dialogDatas.value.datas = row
   dialogDatas.value.show = true
 }
