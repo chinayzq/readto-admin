@@ -12,7 +12,7 @@ APP原型地址：
 
 访问地址：
 
-- https://test.readtox.com/admin/
+- https://www.readtox.com/admin/hDmXnK
 
 问题看板：  
 

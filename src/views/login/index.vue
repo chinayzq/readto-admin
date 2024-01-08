@@ -17,9 +17,9 @@ const loading = ref(false)
 const isDev = import.meta.env.VITE_ENV === 'DEV'
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
-  email: isDev ? '111' : '',
+  email: isDev ? 'develop@qq.com' : '',
   lang: 'en',
-  passWord: isDev ? '111' : ''
+  passWord: isDev ? 'tYHfNfDRU%bF' : ''
   // code: ""
 })
 /** 登录表单校验规则 */
