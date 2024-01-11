@@ -31,6 +31,12 @@
                   </template>
                   {{ JSON.parse(single.result).riskDescription }}
                 </el-descriptions-item>
+                <el-descriptions-item :span="2">
+                  <template #label>
+                    <div class="cell-item">上下文</div>
+                  </template>
+                  {{ contextRender(JSON.parse(single.result).allLabels) }}
+                </el-descriptions-item>
               </el-descriptions>
             </div>
             <!-- 图片结果 -->
@@ -49,6 +55,12 @@
                     </template>
                     {{ imgItem.riskDescription }}
                   </el-descriptions-item>
+                  <el-descriptions-item :span="2">
+                    <template #label>
+                      <div class="cell-item">识别结果{{ imgIndex + 1 }}图片</div>
+                    </template>
+                    <img style="width: 70px; height: 70px" :src="noPassImageUrl(imgItem)" alt="" />
+                  </el-descriptions-item>
                 </el-descriptions>
               </div>
             </div>
@@ -63,6 +75,23 @@
 <script setup>
 import { computed, watch, ref } from 'vue'
 import { getArticleNoPassDetail } from '@/api/article'
+import { formatDateTime } from '@/utils'
+const noPassImageUrl = (item) => {
+  const requestTime = new Date(Number(item.requestId.split('_')[1]))
+  const timeString = formatDateTime(requestTime, 'YYYYMMDD')
+  return `http://xjp-oss-jan.ap-southeast-1.oss.aliyuncs.com/POST_IMG/${timeString}/${item.requestId}.jpg`
+}
+const contextRender = (list) => {
+  let result = ''
+  list.forEach((item) => {
+    if (item.riskDetail && item.riskDetail.riskSegments && item.riskDetail.riskSegments.length) {
+      item.riskDetail.riskSegments.forEach((single) => {
+        result += `【${single.segment}】`
+      })
+    }
+  })
+  return result
+}
 
 const riskLevelMaps = ref({
   PASS: '正常，建议直接放行',
