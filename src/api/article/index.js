@@ -108,3 +108,11 @@ export function getAllTagList(params) {
     params
   })
 }
+
+/** 获取分类列表 */
+export function getArticleNoPassDetail(id) {
+  return request({
+    url: `/story/review/${id}`,
+    method: 'get'
+  })
+}

@@ -56,6 +56,7 @@
         <el-table-column prop="status" label="审核状态">
           <template #default="scope">
             <span>{{ statusMap[scope.row.status] }}</span>
+            <span v-if="scope.row.status === 2" class="link-button" @click="openNoPassDetail(scope.row)"> [详情] </span>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="审核" width="100">
@@ -94,6 +95,7 @@
       @close="modelCloaseHandler"
       :dataset="dialogData"
     />
+    <NoPassDialog :dialogVisible="noPass.show" @close="noPassClose" :articleId="noPass.id" />
   </div>
 </template>
 
@@ -106,6 +108,19 @@ import { getArticleList, deleteArticle, updateArticleStatus, getAllTagList, getA
 import { formatDateTime } from '@/utils'
 import LangSelector from '@/components/LangSelector/index.vue'
 import { getSysConfigList } from '@/api/system'
+import NoPassDialog from './components/noPassDialog.vue'
+
+const noPass = ref({
+  id: null,
+  show: false
+})
+const openNoPassDetail = ({ id }) => {
+  noPass.value.id = id
+  noPass.value.show = true
+}
+const noPassClose = () => {
+  noPass.value.show = false
+}
 
 const contentLimit = ref({
   min: 1000,

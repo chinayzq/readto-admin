@@ -73,7 +73,7 @@
         />
       </div>
     </div>
-    <ArticleDialog :dialogVisible="dialogVisible" @close="modelCloaseHandler" :dataset="dialogData" />
+    <ArticleDialog articleType="2" :dialogVisible="dialogVisible" @close="modelCloaseHandler" :dataset="dialogData" />
   </div>
 </template>
 

@@ -66,7 +66,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="文章标签" prop="tagIds">
+              <el-form-item label="文章标签" prop="tagIds" v-if="articleType === '1'">
                 <el-select
                   :disabled="currentStatus === 'preview'"
                   v-model="formData.tagIds"
@@ -128,6 +128,13 @@ import { ElMessage } from 'element-plus'
 import { formatDateTime } from '@/utils'
 import LangSelector from '@/components/LangSelector/index.vue'
 const props = defineProps({
+  // 文章类型：普通文章：1，交友：2
+  articleType: {
+    type: String,
+    default() {
+      return '1'
+    }
+  },
   dialogVisible: {
     type: Boolean,
     default() {

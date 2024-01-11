@@ -1,6 +1,6 @@
 swagger:
 
-- https://test.readtox.com/admin/api/swagger-ui/index.html
+- https://www.readtox.com/admin/api/swagger-ui/index.html
 
 管理后台原型地址：
 
