@@ -145,9 +145,11 @@ const rateMaps = ref({
   ph: 0,
   sg: 0
 })
+const baseRate = ref(0)
 // 当前美元汇率
 getUsdRate().then((res) => {
-  rateMaps.value.en = Number(res.data)
+  rateMaps.value.en = 1
+  baseRate.value = Number(res.data)
 })
 getMoneyChargeRateList().then((res) => {
   res.data.forEach((item) => {
@@ -169,7 +171,7 @@ getMoneyChargeRateList().then((res) => {
 const goldCountChange = (count) => {
   debugger
   if (rateMaps.value[lang.value] !== 0) {
-    formData.value.rate = (count / rateMaps.value[lang.value]).toFixed(2)
+    formData.value.rate = ((count / baseRate.value) * rateMaps.value[lang.value]).toFixed(2)
   }
 }
 
