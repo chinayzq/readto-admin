@@ -1,6 +1,10 @@
 <template>
   <div class="package-or-card">
-    <LangSelector @change="langChange" style="margin-bottom: 15px" />
+    <el-row>
+      <el-col :span="4">
+        <LangSelector @change="langChange" style="margin-bottom: 15px" />
+      </el-col>
+    </el-row>
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
@@ -53,11 +57,11 @@
       width="600"
       :before-close="handleClose"
     >
-      <el-form label-position="right" label-width="120px" ref="articleFormIns" :rules="formRules" :model="formData">
+      <el-form label-position="right" label-width="120px" ref="articleFormIns" :model="formData">
         <el-row :gutter="48">
           <el-col :span="24">
             <el-form-item label="金币数：" prop="level">
-              <el-input placeholder="" v-model="formData.level" />
+              <el-input placeholder="" v-model="formData.level" @input="goldCountChange" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -95,7 +99,7 @@
 import { ref } from 'vue'
 import { getRateList, updateRateStatus, rateSaveOrUpdate } from '@/api/payment'
 import LangSelector from '@/components/LangSelector/index.vue'
-// import { getUsdRate, getMoneyChargeRateList } from '@/api/payment'
+import { getUsdRate, getMoneyChargeRateList } from '@/api/payment'
 import { ElMessage } from 'element-plus'
 
 const limitOptions = ref([
@@ -134,29 +138,40 @@ const moneyNameMap = ref({
   id: '印尼汇盾',
   ph: '菲律宾比索'
 })
-// const rateMaps = ref({
-//   zh: 10,
-//   en: 10,
-//   id: 10,
-//   ph: 10
-// })
+const rateMaps = ref({
+  zh: 0,
+  en: 0,
+  id: 0,
+  ph: 0,
+  sg: 0
+})
 // 当前美元汇率
-// const usdRate = ref(1000000)
-// getUsdRate().then((res) => {
-//   usdRate.value = Number(res.data)
-// })
-// 各币种对美元汇率
-// const rateKeyMaps = ref({
-//   zh: 'zh_usd_rate',
-//   zh: 'zh_usd_rate',
-//   zh: 'zh_usd_rate',
-//   zh: 'zh_usd_rate',
-// })
-// getMoneyChargeRateList().then(res => {
-//   res.data.forEach(item => {
+getUsdRate().then((res) => {
+  rateMaps.value.en = Number(res.data)
+})
+getMoneyChargeRateList().then((res) => {
+  res.data.forEach((item) => {
+    // 印尼
+    if (item.key === 'id_usd_rate') {
+      rateMaps.value.id = Number(item.value)
+    }
+    // 菲律宾
+    if (item.key === 'ph_usd_rate') {
+      rateMaps.value.ph = Number(item.value)
+    }
+    // 新加坡
+    if (item.key === 'sg_usd_rate') {
+      rateMaps.value.sg = Number(item.value)
+    }
+  })
+})
 
-//   })
-// })
+const goldCountChange = (count) => {
+  debugger
+  if (rateMaps.value[lang.value] !== 0) {
+    formData.value.rate = (count / rateMaps.value[lang.value]).toFixed(2)
+  }
+}
 
 const listLoading = ref(false)
 const tableData = ref([])
@@ -206,6 +221,11 @@ const handleCurrentChange = (page) => {
   initDatas()
 }
 
+const switchState = ref(false)
+const beforeChangeColumn = () => {
+  switchState.value = true
+  return switchState.value
+}
 const statusChange = ({ status, id }) => {
   updateRateStatus({ status, id }).then((res) => {
     if (res.code === 1) {
