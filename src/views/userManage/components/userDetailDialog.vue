@@ -21,7 +21,7 @@
                 :inactive-value="0"
               />
               <span v-else>
-                {{ item.value || "-" }}
+                {{ item.value || '-' }}
               </span>
             </div>
           </el-col>
@@ -36,7 +36,7 @@
                 {{ genderMap[item.value] }}
               </span>
               <span v-else>
-                {{ item.value || item.value === 0 ? item.value : "-" }}
+                {{ item.value || item.value === 0 ? item.value : '-' }}
               </span>
             </div>
           </el-col>
@@ -47,95 +47,96 @@
 </template>
 
 <script setup>
-import { getUserDetail } from "@/api/user"
-import { ref, watch } from "vue"
+import { getUserDetail } from '@/api/user'
+import { ref, watch } from 'vue'
 
 const countInfo = ref([
   {
-    label: "ID",
+    label: 'ID',
     value: 123456,
-    key: "id"
+    key: 'id'
   },
   {
-    label: "绑定手机",
+    label: '绑定手机',
     value: 13512341234,
-    key: "bindPhone"
+    key: 'bindPhone'
   },
   {
-    label: "邮箱",
-    value: "123456@qq.com",
-    key: "email"
+    label: '邮箱',
+    value: '123456@qq.com',
+    key: 'email'
   },
   {
-    label: "注册IP",
-    value: "192.168.0.0",
-    key: "registerIp"
+    label: '注册IP',
+    value: '192.168.0.0',
+    key: 'registerIp'
   },
   {
-    label: "注册时间",
-    value: "2023-10-10 08:08:08",
-    key: "registerTime"
+    label: '注册时间',
+    value: '2023-10-10 08:08:08',
+    key: 'registerTime'
   },
   {
-    label: "手机唯一识别码",
-    value: "showmethemoney",
-    key: "phoneIdentification"
+    label: '手机唯一识别码',
+    value: 'showmethemoney',
+    key: 'phoneIdentification'
   },
   {
-    label: "手机系统",
-    value: "MIUI 12.0.1.1稳定版",
-    key: "phoneSystemVersion"
+    label: '手机系统',
+    value: 'MIUI 12.0.1.1稳定版',
+    key: 'phoneSystemVersion'
   },
   {
-    label: "封禁状态",
+    label: '封禁状态',
     value: 0,
-    key: "userStatus"
+    key: 'userStatus'
   }
 ])
 
 const userInfo = ref([
   {
-    label: "头像",
+    label: '头像',
     value: null,
-    key: "headImg"
+    key: 'headImg'
   },
   {
-    label: "昵称",
-    value: "",
-    key: "nickeName"
+    label: '昵称',
+    value: '',
+    key: 'nickeName'
   },
   {
-    label: "性别",
-    value: "",
-    key: "gender"
+    label: '性别',
+    value: '',
+    key: 'gender'
   },
   {
-    label: "累计金币",
+    label: '累计金币',
     value: 0,
-    key: "accumulatedGoldCoins"
+    key: 'accumulatedGoldCoins'
   },
   {
-    label: "金币余额",
+    label: '金币余额',
     value: 0,
-    key: "availableGoldCoins"
+    key: 'availableGoldCoins'
   },
   {
-    label: "上级",
-    value: "张学友"
+    label: '上级',
+    value: '',
+    key: 'pnickeName'
   },
   {
-    label: "银行卡信息",
+    label: '银行卡信息',
     value: null
   },
   {
-    label: "邀请码",
+    label: '邀请码',
     value: null,
-    key: "inviteCode"
+    key: 'inviteCode'
   },
   {
-    label: "下级人数",
+    label: '下级人数',
     value: 0,
-    key: "subCnt"
+    key: 'subCnt'
   }
 ])
 
@@ -156,7 +157,7 @@ const props = defineProps({
 watch(
   () => props.dataset,
   (datas) => {
-    console.log("datas", datas)
+    console.log('datas', datas)
     if (datas.id) {
       initUserDialogDatas(datas.id)
     }
@@ -164,9 +165,9 @@ watch(
   { deep: true }
 )
 const genderMap = ref({
-  1: "男",
-  2: "女",
-  0: "未知"
+  1: '男',
+  2: '女',
+  0: '未知'
 })
 const dialogLoading = ref(false)
 const initUserDialogDatas = (id) => {
@@ -191,9 +192,9 @@ const initUserDialogDatas = (id) => {
     })
 }
 
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 const handleClose = () => {
-  emit("close")
+  emit('close')
 }
 </script>
 
