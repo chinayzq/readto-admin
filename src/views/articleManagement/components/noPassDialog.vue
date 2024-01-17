@@ -59,7 +59,7 @@
                     <template #label>
                       <div class="cell-item">识别结果{{ imgIndex + 1 }}图片</div>
                     </template>
-                    <img style="width: 70px; height: 70px" :src="noPassImageUrl(imgItem)" alt="" />
+                    <img style="width: 70px; height: 70px" :src="noPassImageUrl(imgItem, item)" alt="" />
                   </el-descriptions-item>
                 </el-descriptions>
               </div>
@@ -76,8 +76,9 @@
 import { computed, watch, ref } from 'vue'
 import { getArticleNoPassDetail } from '@/api/article'
 import { formatDateTime } from '@/utils'
-const noPassImageUrl = (item) => {
-  const requestTime = new Date(Number(item.requestId.split('_')[1]))
+const noPassImageUrl = (item, pItem) => {
+  console.log('pItem', pItem)
+  const requestTime = new Date(pItem[0].createTime)
   const timeString = formatDateTime(requestTime, 'YYYYMMDD')
   return `http://xjp-oss-jan.ap-southeast-1.oss.aliyuncs.com/POST_IMG/${timeString}/${item.requestId}.jpg`
 }

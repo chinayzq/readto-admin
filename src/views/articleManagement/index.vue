@@ -35,6 +35,7 @@
     <div class="table-container">
       <el-table :data="tableData" v-loading="listLoading">
         <el-table-column type="index" label="序号" width="60" />
+        <el-table-column prop="id" label="文章ID" width="100" />
         <el-table-column prop="name" label="标题">
           <template #default="scope">
             <span class="link-button" @click="articlePreviewOpen(scope.row)">{{ scope.row.name }}</span>
@@ -186,8 +187,8 @@ const initDatas = () => {
       key: keyword.value,
       status: status.value,
       lang: lang.value,
-      tags: selectTags.value,
-      orderColumns: ['publish']
+      tags: selectTags.value
+      // orderColumns: ['publish']
     },
     ...pageVO.value
   })
