@@ -82,7 +82,10 @@
         </el-table-column>
         <el-table-column prop="pnickeName" label="上级">
           <template #default="scope">
-            <span>{{ scope.row.pnickeName || '-' }}</span>
+            <span v-if="scope.row.pnickeName" class="link-button" @click="lookParentList(scope.row)">{{
+              scope.row.pnickeName
+            }}</span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
         <el-table-column prop="active" label="激活状态">
@@ -288,8 +291,15 @@ const ageRangeChange = (range) => {
 }
 const lookSubList = (row) => {
   searchForm.value.userId = row.id
+  searchForm.value.key = null
   initDatas()
 }
+const lookParentList = (row) => {
+  searchForm.value.userId = null
+  searchForm.value.key = row.pnickeName
+  initDatas()
+}
+
 //#endregion
 
 //#region 修改
