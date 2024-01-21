@@ -89,10 +89,11 @@ import LangSelector from '@/components/LangSelector/index.vue'
 //#region 查询
 // status -0:草稿 1: 审核中，2: 审核未通过, 3 审核通过
 const statusMap = ref({
-  0: '草稿',
+  0: '已删除',
   1: '审核中',
   2: '审核未通过',
-  3: '审核通过'
+  3: '审核通过',
+  4: '云审核通过'
 })
 const keyword = ref(null)
 const tableData = ref([])
@@ -109,8 +110,8 @@ const verifyOption = ref([
     value: ''
   },
   {
-    label: '审核通过',
-    value: 3
+    label: '已删除',
+    value: 0
   },
   {
     label: '审核中',
@@ -119,6 +120,14 @@ const verifyOption = ref([
   {
     label: '审核未通过',
     value: 2
+  },
+  {
+    label: '审核通过',
+    value: 3
+  },
+  {
+    label: '云审核通过',
+    value: 4
   }
 ])
 const lang = ref('zh')

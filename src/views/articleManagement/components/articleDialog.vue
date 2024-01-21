@@ -72,7 +72,7 @@
                   v-model="formData.tagIds"
                   multiple
                   placeholder="Select"
-                  multiple-limit="3"
+                  :multiple-limit="3"
                   style="width: 100%"
                 >
                   <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -450,9 +450,11 @@ onBeforeUnmount(() => {
   editor.destroy()
 })
 const handleCreated = (editor) => {
+  console.log('xxxxx-2')
   editorRef.value = editor // 记录 editor 实例，重要！
   setEditorDisableStatus(currentStatus.value === 'preview')
 }
+console.log('xxxxx-3')
 //#endregion
 
 const emit = defineEmits(['close'])

@@ -90,13 +90,13 @@
       </div>
     </div>
     <ArticleDialog
-      :dialogVisible="dialogVisible"
+      :dialogVisible="articleDialogVisible"
       :allTagList="allTagList"
       :contentLimit="contentLimit"
       @close="modelCloaseHandler"
       :dataset="dialogData"
     />
-    <NoPassDialog :dialogVisible="noPass.show" @close="noPassClose" :articleId="noPass.id" />
+    <NoPassDialog :dialogVisible="noPass.show" @close="noPassClose" :articleId="noPass.id" storyType="1" />
   </div>
 </template>
 
@@ -143,12 +143,13 @@ const initContentLimit = () => {
 initContentLimit()
 
 //#region 查询
-// status -0:草稿 1: 审核中，2: 审核未通过, 3 审核通过
+// status -0:已删除 1: 审核中，2: 审核未通过, 3 审核通过
 const statusMap = ref({
-  0: '草稿',
+  0: '已删除',
   1: '审核中',
   2: '审核未通过',
-  3: '审核通过'
+  3: '审核通过',
+  4: '云审核通过'
 })
 const keyword = ref(null)
 const tableData = ref([])
@@ -165,8 +166,8 @@ const verifyOption = ref([
     value: ''
   },
   {
-    label: '审核通过',
-    value: 3
+    label: '已删除',
+    value: 0
   },
   {
     label: '审核中',
@@ -175,6 +176,14 @@ const verifyOption = ref([
   {
     label: '审核未通过',
     value: 2
+  },
+  {
+    label: '审核通过',
+    value: 3
+  },
+  {
+    label: '云审核通过',
+    value: 4
   }
 ])
 const lang = ref('zh')
@@ -281,7 +290,7 @@ const auditStatusChange = ({ id, statusSuccess }) => {
 //#endregion
 
 //#region 新增、编辑、预览弹框
-const dialogVisible = ref(false)
+const articleDialogVisible = ref(false)
 const dialogData = ref({
   lang: lang.value,
   title: '新增文章',
@@ -289,27 +298,27 @@ const dialogData = ref({
   datas: {}
 })
 const articleAddOpen = () => {
+  articleDialogVisible.value = true
   dialogData.value.title = '新增文章'
   dialogData.value.status = 'add'
   dialogData.value.datas = {}
   dialogData.value.lang = lang.value
-  dialogVisible.value = true
 }
 const articleEditOpen = (item) => {
   dialogData.value.title = '编辑文章'
   dialogData.value.status = 'edit'
   dialogData.value.lang = lang.value
   dialogData.value.datas = item
-  dialogVisible.value = true
+  articleDialogVisible.value = true
 }
 const articlePreviewOpen = (item) => {
   dialogData.value.title = '文章详情'
   dialogData.value.status = 'preview'
   dialogData.value.datas = item
-  dialogVisible.value = true
+  articleDialogVisible.value = true
 }
 const modelCloaseHandler = (freshFlag) => {
-  dialogVisible.value = false
+  articleDialogVisible.value = false
   dialogData.value.datas = {}
   if (freshFlag === true) {
     initDatas()

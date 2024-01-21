@@ -9,60 +9,57 @@
       v-loading="dialogLoading"
     >
       <div v-if="detailList.length">
-        <div class="single-item" v-for="(item, index) in dataBatch(detailList)" :key="item">
-          <div class="bacth-line">批次：{{ index }}</div>
-          <div v-for="(single, singleIndex) in item" :key="singleIndex">
-            <div class="title-line">
-              类型：
-              {{ single.type === 'text' ? '文字' : '图片' }}
-            </div>
-            <!-- 文字结果 -->
-            <div v-if="single.result && single.type === 'text'">
+        <div class="single-item" v-for="(item, index) in detailList" :key="index">
+          <div class="title-line">
+            类型：
+            {{ item.type === 'text' ? '文字' : '图片' }}
+          </div>
+          <!-- 文字结果 -->
+          <div v-if="item.result && item.type === 'text'">
+            <el-descriptions class="margin-top" :column="2" border>
+              <el-descriptions-item width="200">
+                <template #label>
+                  <div class="cell-item">识别结果</div>
+                </template>
+                {{ riskLevelMaps[item.result.riskLevel] }}
+              </el-descriptions-item>
+              <el-descriptions-item width="200">
+                <template #label>
+                  <div class="cell-item">风险原因</div>
+                </template>
+                {{ item.result.riskDescription }}
+              </el-descriptions-item>
+              <el-descriptions-item :span="2">
+                <template #label>
+                  <div class="cell-item">上下文</div>
+                </template>
+                {{ contextRender(item.result.allLabels) }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </div>
+          <!-- 图片结果 -->
+          <div v-if="item.type === 'pic' && item.result">
+            <div v-for="(imgItem, imgIndex) in item.result.imgs" :key="imgIndex">
               <el-descriptions class="margin-top" :column="2" border>
                 <el-descriptions-item width="200">
                   <template #label>
-                    <div class="cell-item">识别结果</div>
+                    <div class="cell-item">识别结果{{ imgIndex + 1 }}</div>
                   </template>
-                  {{ riskLevelMaps[JSON.parse(single.result).riskLevel] }}
+                  {{ riskLevelMaps[imgItem.riskLevel] }}
                 </el-descriptions-item>
                 <el-descriptions-item width="200">
                   <template #label>
                     <div class="cell-item">风险原因</div>
                   </template>
-                  {{ JSON.parse(single.result).riskDescription }}
+                  {{ imgItem.riskDescription }}
                 </el-descriptions-item>
                 <el-descriptions-item :span="2">
                   <template #label>
-                    <div class="cell-item">上下文</div>
+                    <div class="cell-item">识别结果{{ imgIndex + 1 }}图片</div>
                   </template>
-                  {{ contextRender(JSON.parse(single.result).allLabels) }}
+                  <img style="width: 70px; height: 70px" :src="noPassImageUrl(imgItem, item)" alt="" />
                 </el-descriptions-item>
               </el-descriptions>
-            </div>
-            <!-- 图片结果 -->
-            <div v-if="single.type === 'pic' && single.result">
-              <div v-for="(imgItem, imgIndex) in JSON.parse(single.result).imgs" :key="imgIndex">
-                <el-descriptions class="margin-top" :column="2" border>
-                  <el-descriptions-item width="200">
-                    <template #label>
-                      <div class="cell-item">识别结果{{ imgIndex + 1 }}</div>
-                    </template>
-                    {{ riskLevelMaps[imgItem.riskLevel] }}
-                  </el-descriptions-item>
-                  <el-descriptions-item width="200">
-                    <template #label>
-                      <div class="cell-item">风险原因</div>
-                    </template>
-                    {{ imgItem.riskDescription }}
-                  </el-descriptions-item>
-                  <el-descriptions-item :span="2">
-                    <template #label>
-                      <div class="cell-item">识别结果{{ imgIndex + 1 }}图片</div>
-                    </template>
-                    <img style="width: 70px; height: 70px" :src="noPassImageUrl(imgItem, item)" alt="" />
-                  </el-descriptions-item>
-                </el-descriptions>
-              </div>
             </div>
           </div>
         </div>
@@ -78,7 +75,7 @@ import { getArticleNoPassDetail } from '@/api/article'
 import { formatDateTime } from '@/utils'
 const noPassImageUrl = (item, pItem) => {
   console.log('pItem', pItem)
-  const requestTime = new Date(pItem[0].createTime)
+  const requestTime = new Date(createTime.value)
   const timeString = formatDateTime(requestTime, 'YYYYMMDD')
   return `http://xjp-oss-jan.ap-southeast-1.oss.aliyuncs.com/POST_IMG/${timeString}/${item.requestId}.jpg`
 }
@@ -100,6 +97,10 @@ const riskLevelMaps = ref({
   REJECT: '违规，建议直接拦截'
 })
 const dataBatch = (list) => {
+  try {
+    JSON.parse(list)
+  } catch (error) {}
+  console.log('list', list)
   // {bacthId1: [],bacthId2: [],}
   const result = {}
   list.forEach((item) => {
@@ -123,6 +124,12 @@ const props = defineProps({
     default() {
       return null
     }
+  },
+  storyType: {
+    type: String,
+    default() {
+      return '1'
+    }
   }
 })
 watch(
@@ -137,15 +144,39 @@ watch(
 const dialogLoading = ref(false)
 const dialogShow = computed(() => props.dialogVisible)
 const detailList = ref([])
-const getDetailById = (id) => {
+const createTime = ref(null)
+const getDetailById = (dataId) => {
   dialogLoading.value = true
-  getArticleNoPassDetail(id)
+  getArticleNoPassDetail({
+    dataId,
+    eventId: props.storyType === '1' ? 'writings' : 'message'
+  })
     .then((res) => {
-      detailList.value = res.data
+      detailList.value = resultRender(res.data)
+      createTime.value = res.data.createTime
+      console.log('detailList.value', detailList.value)
     })
     .finally(() => {
       dialogLoading.value = false
     })
+}
+const resultRender = (datas) => {
+  const result = []
+  if (datas.result && datas.result.text) {
+    const temp = {
+      type: 'text',
+      result: JSON.parse(datas.result.text)
+    }
+    result.push(temp)
+  }
+  if (datas.result && datas.result.pic) {
+    const temp = {
+      type: 'pic',
+      result: JSON.parse(datas.result.pic)
+    }
+    result.push(temp)
+  }
+  return result
 }
 
 const emit = defineEmits(['close'])
